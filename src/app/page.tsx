@@ -1,103 +1,238 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import factors from "@/config/factors.json";
+import { computeEstimate, type Selections } from "@/lib/estimate";
+
+type Cfg = typeof factors;
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const config = factors as Cfg;
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+  // Defaults
+  const [country, setCountry] = useState(config.countries[0].code);
+  const [selections, setSelections] = useState<Selections>(() => {
+    const s: Selections = { _country: config.countries[0].code };
+    for (const l of config.levers) {
+      if ("default" in l && l.default !== undefined) s[l.id] = l.default as any;
+    }
+    return s;
+  });
+
+  // Keep _country in selections for the engine
+  useEffect(() => {
+    setSelections(prev => ({ ...prev, _country: country }));
+  }, [country]);
+
+  const result = useMemo(() => computeEstimate(config as any, selections), [config, selections]);
+
+  // Helpers
+  const currency = result.currency === "EUR" ? "€" : result.currency === "USD" ? "$" : result.currency;
+
+  return (
+    <main className="min-h-screen bg-neutral-950 text-neutral-100">
+      <div className="mx-auto max-w-5xl px-6 py-10">
+        <h1 className="text-3xl font-semibold tracking-tight">Website Cost Calculator (Demo)</h1>
+        <p className="mt-2 text-neutral-400">Minimal, extendable. Switch country, adjust levers, see P50/P80.</p>
+
+        {/* Country */}
+        <section className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="rounded-xl border border-neutral-800 p-5">
+            <label className="text-sm text-neutral-300">Country</label>
+            <select
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              className="mt-2 w-full rounded-lg bg-neutral-900 border border-neutral-700 p-2"
+            >
+              {config.countries.map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            <p className="mt-2 text-xs text-neutral-500">
+              Currency: {config.countries.find(c => c.code === country)?.currency}
+            </p>
+          </div>
+
+          {/* Pages */}
+          <NumberLever
+            label="Unique Page Templates"
+            id="pages_unique"
+            min={1}
+            max={50}
+            value={selections["pages_unique"] ?? 6}
+            onChange={(v) => setSelections(s => ({ ...s, pages_unique: v }))}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+
+          {/* Languages */}
+          <NumberLever
+            label="Languages"
+            id="i18n_locales"
+            min={1}
+            max={12}
+            value={selections["i18n_locales"] ?? 1}
+            onChange={(v) => setSelections(s => ({ ...s, i18n_locales: v }))}
           />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
+        </section>
+
+        {/* Selects */}
+        <section className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <SelectLever
+            label="CMS"
+            id="cms_choice"
+            options={[
+              { value: "none", label: "No CMS" },
+              { value: "wordpress", label: "WordPress" },
+              { value: "sanity", label: "Sanity (Headless)" },
+            ]}
+            value={selections["cms_choice"] ?? "sanity"}
+            onChange={(v) => setSelections(s => ({ ...s, cms_choice: v }))}
           />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <SelectLever
+            label="Timeline Pressure"
+            id="timeline_pressure"
+            options={[
+              { value: "normal", label: "Normal" },
+              { value: "rush10", label: "Rush (+10%)" },
+              { value: "rush20", label: "Rush (+20%)" },
+            ]}
+            value={selections["timeline_pressure"] ?? "normal"}
+            onChange={(v) => setSelections(s => ({ ...s, timeline_pressure: v }))}
+          />
+          <SelectLever
+            label="Risk Level"
+            id="risk_level"
+            options={[
+              { value: "low", label: "Low" },
+              { value: "medium", label: "Medium" },
+              { value: "high", label: "High" },
+            ]}
+            value={selections["risk_level"] ?? "medium"}
+            onChange={(v) => setSelections(s => ({ ...s, risk_level: v }))}
+          />
+        </section>
+
+        {/* Output */}
+        <section className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Card title="P50 (Most Likely)">
+            <BigNumber label="Hours" value={result.p50.hours.toFixed(1)} />
+            <BigNumber label="Cost" value={`${currency}${formatMoney(result.p50.cost)}`} />
+          </Card>
+
+          <Card title="P80 (With Risk)">
+            <BigNumber label="Hours" value={result.p80.hours.toFixed(1)} />
+            <BigNumber label="Cost" value={`${currency}${formatMoney(result.p80.cost)}`} />
+          </Card>
+
+          <Card title="Breakdown (Key Roles)">
+            <ListRow label="Design" value={`${result.hoursByRole.design.toFixed(1)} h`} />
+            <ListRow label="Frontend" value={`${result.hoursByRole.frontend.toFixed(1)} h`} />
+            <ListRow label="Backend" value={`${result.hoursByRole.backend.toFixed(1)} h`} />
+            <ListRow label="Content" value={`${result.hoursByRole.content.toFixed(1)} h`} />
+            <ListRow label="SEO" value={`${result.hoursByRole.seo.toFixed(1)} h`} />
+            <ListRow label="DevOps" value={`${result.hoursByRole.devops.toFixed(1)} h`} />
+            <div className="mt-3 h-px bg-neutral-800" />
+            <ListRow label="PM (overhead)" value={`${result.overheads.pmHours.toFixed(1)} h`} />
+            <ListRow label="QA (overhead)" value={`${result.overheads.qaHours.toFixed(1)} h`} />
+          </Card>
+        </section>
+
+        <p className="mt-8 text-sm text-neutral-500">
+          Demo logic supports: option hours, hoursPerUnit, i18n base/extra, multipliers, PM/QA, and risk bands.
+          Swap in your full JSON later to scale up.
+        </p>
+      </div>
+    </main>
+  );
+}
+
+function NumberLever({
+  label,
+  id,
+  value,
+  onChange,
+  min = 0,
+  max = 100
+}: {
+  label: string;
+  id: string;
+  value: number;
+  onChange: (v: number) => void;
+  min?: number;
+  max?: number;
+}) {
+  return (
+    <div className="rounded-xl border border-neutral-800 p-5">
+      <label htmlFor={id} className="text-sm text-neutral-300">{label}</label>
+      <input
+        id={id}
+        type="number"
+        min={min}
+        max={max}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="mt-2 w-full rounded-lg bg-neutral-900 border border-neutral-700 p-2"
+      />
     </div>
   );
+}
+
+function SelectLever({
+  label,
+  id,
+  value,
+  onChange,
+  options
+}: {
+  label: string;
+  id: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: { value: string; label: string }[];
+}) {
+  return (
+    <div className="rounded-xl border border-neutral-800 p-5">
+      <label htmlFor={id} className="text-sm text-neutral-300">{label}</label>
+      <select
+        id={id}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="mt-2 w-full rounded-lg bg-neutral-900 border border-neutral-700 p-2"
+      >
+        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+      </select>
+    </div>
+  );
+}
+
+function Card({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-2xl border border-neutral-800 bg-neutral-900/40 p-6">
+      <h3 className="text-lg font-medium">{title}</h3>
+      <div className="mt-4 space-y-2">{children}</div>
+    </div>
+  );
+}
+
+function BigNumber({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div className="text-sm text-neutral-400">{label}</div>
+      <div className="text-2xl font-semibold">{value}</div>
+    </div>
+  );
+}
+
+function ListRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between text-sm">
+      <span className="text-neutral-400">{label}</span>
+      <span className="font-medium">{value}</span>
+    </div>
+  );
+}
+
+function formatMoney(n: number) {
+  return n.toLocaleString(undefined, { maximumFractionDigits: 0 });
 }

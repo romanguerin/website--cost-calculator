@@ -1,0 +1,445 @@
+{
+  "version": "1.0.0",
+  "currencyDefault": "EUR",
+  "currencies": {
+    "EUR": { "symbol": "€", "fxToEUR": 1 },
+    "USD": { "symbol": "$", "fxToEUR": 0.92 },
+    "GBP": { "symbol": "£", "fxToEUR": 1.17 }
+  },
+
+  "countries": [
+    {
+      "code": "NL",
+      "name": "Netherlands",
+      "currency": "EUR",
+      "baseRates": {
+        "design": 75,
+        "frontend": 85,
+        "backend": 95,
+        "fullstack": 90,
+        "pm": 80,
+        "qa": 60,
+        "seo": 70,
+        "devops": 95,
+        "content": 55
+      },
+      "tax": { "vatIncluded": false, "vatPercent": 21 }
+    },
+    {
+      "code": "FR",
+      "name": "France",
+      "currency": "EUR",
+      "baseRates": {
+        "design": 70,
+        "frontend": 80,
+        "backend": 90,
+        "fullstack": 85,
+        "pm": 75,
+        "qa": 55,
+        "seo": 65,
+        "devops": 90,
+        "content": 50
+      },
+      "tax": { "vatIncluded": false, "vatPercent": 20 }
+    },
+    {
+      "code": "US",
+      "name": "United States",
+      "currency": "USD",
+      "baseRates": {
+        "design": 110,
+        "frontend": 125,
+        "backend": 140,
+        "fullstack": 130,
+        "pm": 120,
+        "qa": 85,
+        "seo": 100,
+        "devops": 145,
+        "content": 80
+      },
+      "tax": { "vatIncluded": false, "vatPercent": 0 }
+    }
+  ],
+
+  "globalOverheads": {
+    "pmPercentOfBuild": 0.12,
+    "qaPercentOfBuild": 0.08,
+    "contingencyRiskBands": {
+      "low": 0.05,
+      "medium": 0.12,
+      "high": 0.22
+    },
+    "maintenance": {
+      "warrantyWeeks": 4,
+      "retainerMonthlyPercent": 0.08
+    }
+  },
+
+  "levers": [
+    {
+      "id": "project_type",
+      "label": "Project Type",
+      "type": "select",
+      "options": [
+        { "value": "brochure", "label": "Brochure/Marketing" },
+        { "value": "ecommerce", "label": "E‑commerce" },
+        { "value": "webapp", "label": "Web App / SaaS" }
+      ],
+      "default": "brochure"
+    },
+    {
+      "id": "brand_design",
+      "label": "Brand & Visual Design",
+      "type": "select",
+      "options": [
+        { "value": "none", "label": "Existing brand (no design)", "hours.design": 0 },
+        { "value": "light", "label": "Light UI polish", "hours.design": 14 },
+        { "value": "full", "label": "Full design system", "hours.design": 50 }
+      ],
+      "default": "light"
+    },
+    {
+      "id": "pages_unique",
+      "label": "Unique Page Templates",
+      "type": "number",
+      "unit": "templates",
+      "min": 1,
+      "max": 50,
+      "default": 6,
+      "hoursPerUnit": { "design": 2.5, "frontend": 3.5, "qa": 0.7 }
+    },
+    {
+      "id": "pages_reused_count",
+      "label": "Reusable Pages (content instances)",
+      "type": "number",
+      "unit": "pages",
+      "min": 0,
+      "max": 1000,
+      "default": 20,
+      "hoursPerBatch": {
+        "batchSize": 10,
+        "content": 2,
+        "qa": 0.5
+      }
+    },
+    {
+      "id": "cms_choice",
+      "label": "CMS",
+      "type": "select",
+      "options": [
+        { "value": "none", "label": "No CMS", "multiplier.backend": 0.9 },
+        { "value": "wordpress", "label": "WordPress", "hours.backend": 12 },
+        { "value": "sanity", "label": "Sanity (Headless)", "hours.backend": 24 },
+        { "value": "shopify", "label": "Shopify (Headless optional)", "hours.backend": 26 }
+      ],
+      "default": "sanity"
+    },
+    {
+      "id": "i18n_locales",
+      "label": "Languages",
+      "type": "number",
+      "min": 1,
+      "max": 12,
+      "default": 1,
+      "hoursBase": { "frontend": 6, "backend": 6 },
+      "hoursPerExtraLocale": { "frontend": 2.5, "backend": 2.5, "content": 4, "qa": 1.5 }
+    },
+    {
+      "id": "ecom_depth",
+      "label": "E‑commerce Scope",
+      "type": "select",
+      "visibleWhen": [{ "id": "project_type", "equals": "ecommerce" }],
+      "options": [
+        { "value": "lite", "label": "Payments only (few SKUs)", "hours.backend": 18, "hours.frontend": 14 },
+        { "value": "standard", "label": "Catalog + cart + taxes + shipping", "hours.backend": 55, "hours.frontend": 40 },
+        { "value": "advanced", "label": "Variants, promos, subscriptions", "hours.backend": 95, "hours.frontend": 70 }
+      ],
+      "default": "standard"
+    },
+    {
+      "id": "sku_count",
+      "label": "Number of Products",
+      "type": "number",
+      "min": 0,
+      "max": 20000,
+      "default": 100,
+      "visibleWhen": [{ "id": "project_type", "equals": "ecommerce" }],
+      "hoursPerBatch": {
+        "batchSize": 50,
+        "content": 3,
+        "qa": 1
+      }
+    },
+    {
+      "id": "auth",
+      "label": "Authentication & Accounts",
+      "type": "select",
+      "options": [
+        { "value": "none", "label": "No auth", "hours.backend": 0, "hours.frontend": 0 },
+        { "value": "email", "label": "Email/password + reset", "hours.backend": 14, "hours.frontend": 10 },
+        { "value": "oauth", "label": "OAuth (Google/Apple/etc.)", "hours.backend": 22, "hours.frontend": 12 }
+      ],
+      "default": "none"
+    },
+    {
+      "id": "integrations",
+      "label": "3rd‑Party Integrations",
+      "type": "multiselect",
+      "options": [
+        { "value": "analytics", "label": "GA4 + Consent", "hours.backend": 3, "hours.frontend": 4 },
+        { "value": "crm", "label": "CRM (HubSpot/Salesforce)", "hours.backend": 12, "hours.frontend": 4 },
+        { "value": "emailing", "label": "Email (Brevo/Mailchimp)", "hours.backend": 6, "hours.frontend": 3 },
+        { "value": "payments", "label": "Payments (Stripe/etc.)", "hours.backend": 10, "hours.frontend": 6 },
+        { "value": "search", "label": "Site Search (Algolia/Meilisearch)", "hours.backend": 10, "hours.frontend": 6 },
+        { "value": "pim", "label": "PIM/ERP connector", "hours.backend": 24, "hours.frontend": 6 }
+      ],
+      "maxSelected": 5
+    },
+    {
+      "id": "performance_target",
+      "label": "Performance Target (Core Web Vitals)",
+      "type": "select",
+      "options": [
+        { "value": "basic", "label": "Reasonable defaults", "multiplier.frontend": 1, "multiplier.devops": 1 },
+        { "value": "good", "label": "Lighthouse ~85+", "multiplier.frontend": 1.15, "hours.devops": 6 },
+        { "value": "excellent", "label": "Lighthouse 95+ / CWV green", "multiplier.frontend": 1.35, "hours.devops": 12 }
+      ],
+      "default": "good"
+    },
+    {
+      "id": "accessibility",
+      "label": "Accessibility (WCAG)",
+      "type": "select",
+      "options": [
+        { "value": "aa_partial", "label": "AA (pragmatic)", "hours.qa": 10, "hours.frontend": 10 },
+        { "value": "aa_full", "label": "AA (full audit + fixes)", "hours.qa": 28, "hours.frontend": 24 },
+        { "value": "aaa", "label": "AAA (targeted areas)", "hours.qa": 36, "hours.frontend": 30 }
+      ],
+      "default": "aa_partial"
+    },
+    {
+      "id": "animations",
+      "label": "Animations & Interactions",
+      "type": "select",
+      "options": [
+        { "value": "minimal", "label": "Basic transitions", "hours.frontend": 4 },
+        { "value": "moderate", "label": "Hero + section reveals", "hours.frontend": 16 },
+        { "value": "complex", "label": "Rich micro‑interactions / 3D", "hours.frontend": 36 }
+      ],
+      "default": "moderate"
+    },
+    {
+      "id": "content_state",
+      "label": "Content Readiness",
+      "type": "select",
+      "options": [
+        { "value": "ready", "label": "All content provided", "multiplier.content": 0.6 },
+        { "value": "partial", "label": "Partial (requires edits)", "multiplier.content": 1 },
+        { "value": "copy_needed", "label": "Copywriting needed", "hours.content": 24 }
+      ],
+      "default": "partial"
+    },
+    {
+      "id": "seo_package",
+      "label": "SEO",
+      "type": "select",
+      "options": [
+        { "value": "tech_onpage", "label": "Technical + on‑page setup", "hours.seo": 14 },
+        { "value": "tech_keyword", "label": "Technical + keyword mapping", "hours.seo": 28 },
+        { "value": "full", "label": "Full SEO incl. content plan", "hours.seo": 48 }
+      ],
+      "default": "tech_onpage"
+    },
+    {
+      "id": "security_hardening",
+      "label": "Security & Compliance",
+      "type": "select",
+      "options": [
+        { "value": "standard", "label": "Best practices", "hours.devops": 6 },
+        { "value": "enhanced", "label": "WAF, rate‑limit, scans", "hours.devops": 16 }
+      ],
+      "default": "standard"
+    },
+    {
+      "id": "hosting_stack",
+      "label": "Hosting/Stack",
+      "type": "select",
+      "options": [
+        { "value": "vercel_static", "label": "Static/SSR on Vercel", "hours.devops": 6 },
+        { "value": "node_server", "label": "Node server (Docker)", "hours.devops": 14 },
+        { "value": "kubernetes", "label": "K8s/Autoscale", "hours.devops": 28 }
+      ],
+      "default": "vercel_static"
+    },
+    {
+      "id": "migration",
+      "label": "Content Migration",
+      "type": "select",
+      "options": [
+        { "value": "none", "label": "No legacy content", "hours.content": 0 },
+        { "value": "semi_auto", "label": "Semi‑automated import", "hours.content": 16, "hours.backend": 8 },
+        { "value": "manual", "label": "Manual migration", "hours.content": 32 }
+      ],
+      "default": "none"
+    },
+    {
+      "id": "testing_scope",
+      "label": "Testing Scope",
+      "type": "multiselect",
+      "options": [
+        { "value": "browsers", "label": "Cross‑browser matrix", "hours.qa": 10 },
+        { "value": "devices", "label": "Responsive device set", "hours.qa": 8 },
+        { "value": "automation", "label": "Basic E2E automation", "hours.qa": 18, "hours.devops": 6 }
+      ]
+    },
+    {
+      "id": "handover_docs",
+      "label": "Handover & Docs",
+      "type": "select",
+      "options": [
+        { "value": "readme", "label": "README + Looms", "hours.pm": 6 },
+        { "value": "playbook", "label": "Ops playbook + training", "hours.pm": 16 }
+      ],
+      "default": "readme"
+    },
+    {
+      "id": "risk_level",
+      "label": "Risk Level",
+      "type": "select",
+      "options": [
+        { "value": "low", "label": "Low" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "high", "label": "High" }
+      ],
+      "default": "medium"
+    },
+    {
+      "id": "timeline_pressure",
+      "label": "Timeline Pressure",
+      "type": "select",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "rush10", "label": "Rush (+10%)", "multiplier.all": 1.1 },
+        { "value": "rush20", "label": "Rush (+20%)", "multiplier.all": 1.2 }
+      ],
+      "default": "normal"
+    }
+  ],
+
+  "dependencies": [
+    {
+      "if": { "id": "cms_choice", "equals": "none" },
+      "then": { "hide": ["migration"], "adjust": [{ "id": "content_state", "set": "ready" }] }
+    },
+    {
+      "if": { "id": "project_type", "equals": "webapp" },
+      "then": { "show": ["auth"], "adjust": [{ "id": "pages_reused_count", "set": 5 }] }
+    }
+  ],
+
+  "presets": [
+    {
+      "id": "preset_brochure_small",
+      "label": "Small Brochure (1‑lang)",
+      "country": "FR",
+      "values": {
+        "project_type": "brochure",
+        "brand_design": "light",
+        "pages_unique": 5,
+        "pages_reused_count": 12,
+        "cms_choice": "sanity",
+        "i18n_locales": 1,
+        "auth": "none",
+        "integrations": ["analytics", "emailing"],
+        "performance_target": "good",
+        "accessibility": "aa_partial",
+        "animations": "moderate",
+        "content_state": "partial",
+        "seo_package": "tech_onpage",
+        "security_hardening": "standard",
+        "hosting_stack": "vercel_static",
+        "migration": "none",
+        "testing_scope": ["devices"],
+        "handover_docs": "readme",
+        "risk_level": "medium",
+        "timeline_pressure": "normal"
+      }
+    },
+    {
+      "id": "preset_smb_ecommerce",
+      "label": "SMB E‑commerce",
+      "country": "NL",
+      "values": {
+        "project_type": "ecommerce",
+        "brand_design": "full",
+        "pages_unique": 8,
+        "pages_reused_count": 30,
+        "cms_choice": "shopify",
+        "i18n_locales": 2,
+        "ecom_depth": "standard",
+        "sku_count": 250,
+        "auth": "email",
+        "integrations": ["analytics", "payments", "emailing", "search"],
+        "performance_target": "good",
+        "accessibility": "aa_partial",
+        "animations": "moderate",
+        "content_state": "partial",
+        "seo_package": "tech_keyword",
+        "security_hardening": "enhanced",
+        "hosting_stack": "vercel_static",
+        "migration": "semi_auto",
+        "testing_scope": ["browsers", "devices"],
+        "handover_docs": "readme",
+        "risk_level": "medium",
+        "timeline_pressure": "normal"
+      }
+    },
+    {
+      "id": "preset_multilingual_corporate",
+      "label": "Multilingual Corporate",
+      "country": "US",
+      "values": {
+        "project_type": "brochure",
+        "brand_design": "full",
+        "pages_unique": 12,
+        "pages_reused_count": 60,
+        "cms_choice": "sanity",
+        "i18n_locales": 4,
+        "auth": "oauth",
+        "integrations": ["analytics", "crm", "emailing"],
+        "performance_target": "excellent",
+        "accessibility": "aa_full",
+        "animations": "moderate",
+        "content_state": "copy_needed",
+        "seo_package": "full",
+        "security_hardening": "enhanced",
+        "hosting_stack": "node_server",
+        "migration": "manual",
+        "testing_scope": ["browsers", "devices", "automation"],
+        "handover_docs": "playbook",
+        "risk_level": "high",
+        "timeline_pressure": "rush10"
+      }
+    }
+  ],
+
+  "outputConfig": {
+    "showBands": ["P50", "P80"],
+    "rounding": { "currency": 0, "hours": 1 },
+    "includeAssumptions": true,
+    "includeExclusions": true
+  },
+
+  "assumptions": [
+    "Client provides brand assets unless 'Brand & Visual Design' is 'full'.",
+    "Content is final unless 'Content Readiness' indicates copywriting or edits.",
+    "One round of revisions per unique template is included.",
+    "No legacy browser support beyond last 2 major versions."
+  ],
+  "exclusions": [
+    "Stock photography/licensing fees.",
+    "3rd‑party subscription costs (CMS, search, WAF, etc.).",
+    "Ongoing SEO link‑building and PR.",
+    "Custom native mobile apps."
+  ]
+}
