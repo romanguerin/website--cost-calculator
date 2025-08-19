@@ -13,15 +13,8 @@
       "name": "Netherlands",
       "currency": "EUR",
       "baseRates": {
-        "design": 75,
-        "frontend": 85,
-        "backend": 95,
-        "fullstack": 90,
-        "pm": 80,
-        "qa": 60,
-        "seo": 70,
-        "devops": 95,
-        "content": 55
+        "design": 75, "frontend": 85, "backend": 95, "fullstack": 90,
+        "pm": 80, "qa": 60, "seo": 70, "devops": 95, "content": 55
       },
       "tax": { "vatIncluded": false, "vatPercent": 21 }
     },
@@ -30,15 +23,8 @@
       "name": "France",
       "currency": "EUR",
       "baseRates": {
-        "design": 70,
-        "frontend": 80,
-        "backend": 90,
-        "fullstack": 85,
-        "pm": 75,
-        "qa": 55,
-        "seo": 65,
-        "devops": 90,
-        "content": 50
+        "design": 70, "frontend": 80, "backend": 90, "fullstack": 85,
+        "pm": 75, "qa": 55, "seo": 65, "devops": 90, "content": 50
       },
       "tax": { "vatIncluded": false, "vatPercent": 20 }
     },
@@ -47,15 +33,8 @@
       "name": "United States",
       "currency": "USD",
       "baseRates": {
-        "design": 110,
-        "frontend": 125,
-        "backend": 140,
-        "fullstack": 130,
-        "pm": 120,
-        "qa": 85,
-        "seo": 100,
-        "devops": 145,
-        "content": 80
+        "design": 110, "frontend": 125, "backend": 140, "fullstack": 130,
+        "pm": 120, "qa": 85, "seo": 100, "devops": 145, "content": 80
       },
       "tax": { "vatIncluded": false, "vatPercent": 0 }
     }
@@ -64,15 +43,8 @@
   "globalOverheads": {
     "pmPercentOfBuild": 0.12,
     "qaPercentOfBuild": 0.08,
-    "contingencyRiskBands": {
-      "low": 0.05,
-      "medium": 0.12,
-      "high": 0.22
-    },
-    "maintenance": {
-      "warrantyWeeks": 4,
-      "retainerMonthlyPercent": 0.08
-    }
+    "contingencyRiskBands": { "low": 0.05, "medium": 0.12, "high": 0.22 },
+    "maintenance": { "warrantyWeeks": 4, "retainerMonthlyPercent": 0.08 }
   },
 
   "levers": [
@@ -82,7 +54,7 @@
       "type": "select",
       "options": [
         { "value": "brochure", "label": "Brochure/Marketing" },
-        { "value": "ecommerce", "label": "E‑commerce" },
+        { "value": "ecommerce", "label": "E-commerce" },
         { "value": "webapp", "label": "Web App / SaaS" }
       ],
       "default": "brochure"
@@ -103,9 +75,7 @@
       "label": "Unique Page Templates",
       "type": "number",
       "unit": "templates",
-      "min": 1,
-      "max": 50,
-      "default": 6,
+      "min": 1, "max": 50, "default": 6,
       "hoursPerUnit": { "design": 2.5, "frontend": 3.5, "qa": 0.7 }
     },
     {
@@ -113,14 +83,49 @@
       "label": "Reusable Pages (content instances)",
       "type": "number",
       "unit": "pages",
-      "min": 0,
-      "max": 1000,
-      "default": 20,
-      "hoursPerBatch": {
-        "batchSize": 10,
-        "content": 2,
-        "qa": 0.5
-      }
+      "min": 0, "max": 1000, "default": 20,
+      "hoursPerBatch": { "batchSize": 10, "content": 2, "qa": 0.5 }
+    },
+    {
+      "id": "i18n_locales",
+      "label": "Languages",
+      "type": "number",
+      "min": 1, "max": 12, "default": 1,
+      "hoursBase": { "frontend": 6, "backend": 6 },
+      "hoursPerExtraLocale": { "frontend": 2.5, "backend": 2.5, "content": 4, "qa": 1.5 }
+    },
+    {
+      "id": "animations",
+      "label": "Animations & Interactions",
+      "type": "select",
+      "options": [
+        { "value": "minimal", "label": "Basic transitions", "hours.frontend": 4 },
+        { "value": "moderate", "label": "Hero + section reveals", "hours.frontend": 16 },
+        { "value": "complex", "label": "Rich micro-interactions / 3D", "hours.frontend": 36 }
+      ],
+      "default": "moderate"
+    },
+    {
+      "id": "seo_package",
+      "label": "SEO",
+      "type": "select",
+      "options": [
+        { "value": "tech_onpage", "label": "Technical + on-page setup", "hours.seo": 14 },
+        { "value": "tech_keyword", "label": "Technical + keyword mapping", "hours.seo": 28 },
+        { "value": "full", "label": "Full SEO incl. content plan", "hours.seo": 48 }
+      ],
+      "default": "tech_onpage"
+    },
+    {
+      "id": "content_state",
+      "label": "Content Readiness",
+      "type": "select",
+      "options": [
+        { "value": "ready", "label": "All content provided", "multiplier.content": 0.6 },
+        { "value": "partial", "label": "Partial (requires edits)", "multiplier.content": 1 },
+        { "value": "copy_needed", "label": "Copywriting needed", "hours.content": 24 }
+      ],
+      "default": "partial"
     },
     {
       "id": "cms_choice",
@@ -135,55 +140,19 @@
       "default": "sanity"
     },
     {
-      "id": "i18n_locales",
-      "label": "Languages",
-      "type": "number",
-      "min": 1,
-      "max": 12,
-      "default": 1,
-      "hoursBase": { "frontend": 6, "backend": 6 },
-      "hoursPerExtraLocale": { "frontend": 2.5, "backend": 2.5, "content": 4, "qa": 1.5 }
-    },
-    {
-      "id": "ecom_depth",
-      "label": "E‑commerce Scope",
-      "type": "select",
-      "visibleWhen": [{ "id": "project_type", "equals": "ecommerce" }],
+      "id": "social_media",
+      "label": "Social Media (Sharing & Embeds)",
+      "type": "multiselect",
       "options": [
-        { "value": "lite", "label": "Payments only (few SKUs)", "hours.backend": 18, "hours.frontend": 14 },
-        { "value": "standard", "label": "Catalog + cart + taxes + shipping", "hours.backend": 55, "hours.frontend": 40 },
-        { "value": "advanced", "label": "Variants, promos, subscriptions", "hours.backend": 95, "hours.frontend": 70 }
+        { "value": "sharing_meta", "label": "Sharing meta (OG/Twitter)", "hours.frontend": 2, "hours.seo": 1 },
+        { "value": "embeds", "label": "Embeds (YouTube/Instagram)", "hours.frontend": 3, "hours.qa": 1 },
+        { "value": "feed", "label": "Dynamic feed", "hours.backend": 6, "hours.frontend": 4, "hours.qa": 2 }
       ],
-      "default": "standard"
-    },
-    {
-      "id": "sku_count",
-      "label": "Number of Products",
-      "type": "number",
-      "min": 0,
-      "max": 20000,
-      "default": 100,
-      "visibleWhen": [{ "id": "project_type", "equals": "ecommerce" }],
-      "hoursPerBatch": {
-        "batchSize": 50,
-        "content": 3,
-        "qa": 1
-      }
-    },
-    {
-      "id": "auth",
-      "label": "Authentication & Accounts",
-      "type": "select",
-      "options": [
-        { "value": "none", "label": "No auth", "hours.backend": 0, "hours.frontend": 0 },
-        { "value": "email", "label": "Email/password + reset", "hours.backend": 14, "hours.frontend": 10 },
-        { "value": "oauth", "label": "OAuth (Google/Apple/etc.)", "hours.backend": 22, "hours.frontend": 12 }
-      ],
-      "default": "none"
+      "maxSelected": 3
     },
     {
       "id": "integrations",
-      "label": "3rd‑Party Integrations",
+      "label": "3rd-Party Integrations",
       "type": "multiselect",
       "options": [
         { "value": "analytics", "label": "GA4 + Consent", "hours.backend": 3, "hours.frontend": 4 },
@@ -218,49 +187,6 @@
       "default": "aa_partial"
     },
     {
-      "id": "animations",
-      "label": "Animations & Interactions",
-      "type": "select",
-      "options": [
-        { "value": "minimal", "label": "Basic transitions", "hours.frontend": 4 },
-        { "value": "moderate", "label": "Hero + section reveals", "hours.frontend": 16 },
-        { "value": "complex", "label": "Rich micro‑interactions / 3D", "hours.frontend": 36 }
-      ],
-      "default": "moderate"
-    },
-    {
-      "id": "content_state",
-      "label": "Content Readiness",
-      "type": "select",
-      "options": [
-        { "value": "ready", "label": "All content provided", "multiplier.content": 0.6 },
-        { "value": "partial", "label": "Partial (requires edits)", "multiplier.content": 1 },
-        { "value": "copy_needed", "label": "Copywriting needed", "hours.content": 24 }
-      ],
-      "default": "partial"
-    },
-    {
-      "id": "seo_package",
-      "label": "SEO",
-      "type": "select",
-      "options": [
-        { "value": "tech_onpage", "label": "Technical + on‑page setup", "hours.seo": 14 },
-        { "value": "tech_keyword", "label": "Technical + keyword mapping", "hours.seo": 28 },
-        { "value": "full", "label": "Full SEO incl. content plan", "hours.seo": 48 }
-      ],
-      "default": "tech_onpage"
-    },
-    {
-      "id": "security_hardening",
-      "label": "Security & Compliance",
-      "type": "select",
-      "options": [
-        { "value": "standard", "label": "Best practices", "hours.devops": 6 },
-        { "value": "enhanced", "label": "WAF, rate‑limit, scans", "hours.devops": 16 }
-      ],
-      "default": "standard"
-    },
-    {
       "id": "hosting_stack",
       "label": "Hosting/Stack",
       "type": "select",
@@ -272,22 +198,21 @@
       "default": "vercel_static"
     },
     {
-      "id": "migration",
-      "label": "Content Migration",
+      "id": "security_hardening",
+      "label": "Security & Compliance",
       "type": "select",
       "options": [
-        { "value": "none", "label": "No legacy content", "hours.content": 0 },
-        { "value": "semi_auto", "label": "Semi‑automated import", "hours.content": 16, "hours.backend": 8 },
-        { "value": "manual", "label": "Manual migration", "hours.content": 32 }
+        { "value": "standard", "label": "Best practices", "hours.devops": 6 },
+        { "value": "enhanced", "label": "WAF, rate-limit, scans", "hours.devops": 16 }
       ],
-      "default": "none"
+      "default": "standard"
     },
     {
       "id": "testing_scope",
       "label": "Testing Scope",
       "type": "multiselect",
       "options": [
-        { "value": "browsers", "label": "Cross‑browser matrix", "hours.qa": 10 },
+        { "value": "browsers", "label": "Cross-browser matrix", "hours.qa": 10 },
         { "value": "devices", "label": "Responsive device set", "hours.qa": 8 },
         { "value": "automation", "label": "Basic E2E automation", "hours.qa": 18, "hours.devops": 6 }
       ]
@@ -303,6 +228,17 @@
       "default": "readme"
     },
     {
+      "id": "timeline_pressure",
+      "label": "Timeline Pressure",
+      "type": "select",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "rush10", "label": "Rush (+10%)", "multiplier.all": 1.1 },
+        { "value": "rush20", "label": "Rush (+20%)", "multiplier.all": 1.2 }
+      ],
+      "default": "normal"
+    },
+    {
       "id": "risk_level",
       "label": "Risk Level",
       "type": "select",
@@ -313,16 +249,350 @@
       ],
       "default": "medium"
     },
+
     {
-      "id": "timeline_pressure",
-      "label": "Timeline Pressure",
+      "id": "ecom_depth",
+      "label": "E-commerce Scope",
+      "type": "select",
+      "visibleWhen": [{ "id": "project_type", "equals": "ecommerce" }],
+      "options": [
+        { "value": "lite", "label": "Payments only (few SKUs)", "hours.backend": 18, "hours.frontend": 14 },
+        { "value": "standard", "label": "Catalog + cart + taxes + shipping", "hours.backend": 55, "hours.frontend": 40 },
+        { "value": "advanced", "label": "Variants, promos, subscriptions", "hours.backend": 95, "hours.frontend": 70 }
+      ],
+      "default": "standard"
+    },
+    {
+      "id": "sku_count",
+      "label": "Number of Products",
+      "type": "number",
+      "min": 0, "max": 20000, "default": 100,
+      "visibleWhen": [{ "id": "project_type", "equals": "ecommerce" }],
+      "hoursPerBatch": { "batchSize": 50, "content": 3, "qa": 1 }
+    },
+    {
+      "id": "payments_providers",
+      "label": "Payment Providers",
+      "type": "multiselect",
+      "visibleWhen": [{ "id": "project_type", "equals": "ecommerce" }],
+      "options": [
+        { "value": "stripe", "label": "Stripe", "hours.backend": 10, "hours.frontend": 6 },
+        { "value": "adyen", "label": "Adyen", "hours.backend": 14, "hours.frontend": 6 },
+        { "value": "paypal", "label": "PayPal", "hours.backend": 8, "hours.frontend": 4 },
+        { "value": "applepay", "label": "Apple Pay", "hours.backend": 4, "hours.frontend": 2 }
+      ],
+      "maxSelected": 3
+    },
+    {
+      "id": "tax_shipping_complexity",
+      "label": "Taxes & Shipping Complexity",
+      "type": "select",
+      "visibleWhen": [{ "id": "project_type", "equals": "ecommerce" }],
+      "options": [
+        { "value": "basic", "label": "Basic rules (few regions)", "hours.backend": 6, "hours.qa": 2 },
+        { "value": "standard", "label": "Multiple regions/rates", "hours.backend": 14, "hours.qa": 4 },
+        { "value": "advanced", "label": "Complex rules/promos", "hours.backend": 28, "hours.qa": 8 }
+      ],
+      "default": "standard"
+    },
+    {
+      "id": "subscriptions",
+      "label": "Subscriptions/Billing",
+      "type": "select",
+      "visibleWhen": [{ "id": "project_type", "equals": "ecommerce" }],
+      "options": [
+        { "value": "no", "label": "No", "hours.backend": 0, "hours.frontend": 0 },
+        { "value": "yes", "label": "Yes", "hours.backend": 16, "hours.frontend": 6, "hours.qa": 6 }
+      ],
+      "default": "no"
+    },
+    {
+      "id": "variants_promos",
+      "label": "Variants & Promotions",
+      "type": "select",
+      "visibleWhen": [{ "id": "project_type", "equals": "ecommerce" }],
+      "options": [
+        { "value": "no", "label": "No", "hours.backend": 0, "hours.frontend": 0 },
+        { "value": "yes", "label": "Yes", "hours.backend": 12, "hours.frontend": 10, "hours.qa": 4 }
+      ],
+      "default": "no"
+    },
+    {
+      "id": "inventory_sync",
+      "label": "Inventory/ERP/PIM Sync",
+      "type": "select",
+      "visibleWhen": [{ "id": "project_type", "equals": "ecommerce" }],
+      "options": [
+        { "value": "no", "label": "No", "hours.backend": 0 },
+        { "value": "yes", "label": "Yes", "hours.backend": 24, "hours.devops": 8, "hours.qa": 6 }
+      ],
+      "default": "no"
+    },
+
+    {
+      "id": "migration",
+      "label": "Content Migration",
       "type": "select",
       "options": [
-        { "value": "normal", "label": "Normal" },
-        { "value": "rush10", "label": "Rush (+10%)", "multiplier.all": 1.1 },
-        { "value": "rush20", "label": "Rush (+20%)", "multiplier.all": 1.2 }
+        { "value": "none", "label": "No legacy content", "hours.content": 0 },
+        { "value": "semi_auto", "label": "Semi-automated import", "hours.content": 16, "hours.backend": 8 },
+        { "value": "manual", "label": "Manual migration", "hours.content": 32 }
       ],
-      "default": "normal"
+      "default": "none"
+    },
+    {
+      "id": "content_creation_pages",
+      "label": "Pages Requiring Copywriting",
+      "type": "number",
+      "min": 0, "max": 500, "default": 0,
+      "hoursPerUnit": { "content": 1.5, "seo": 0.5 }
+    },
+    {
+      "id": "assets_to_process",
+      "label": "Image/Asset Processing (count)",
+      "type": "number",
+      "min": 0, "max": 5000, "default": 50,
+      "hoursPerBatch": { "batchSize": 50, "content": 2, "qa": 0.5 }
+    },
+    {
+      "id": "blog_enabled",
+      "label": "Blog/News Enabled",
+      "type": "select",
+      "options": [
+        { "value": "no", "label": "No" },
+        { "value": "yes", "label": "Yes", "hours.design": 2, "hours.frontend": 4, "hours.backend": 3, "hours.qa": 1 }
+      ],
+      "default": "yes"
+    },
+    {
+      "id": "posts_to_migrate",
+      "label": "Legacy Posts to Migrate",
+      "type": "number",
+      "min": 0, "max": 5000, "default": 0,
+      "visibleWhen": [{ "id": "blog_enabled", "equals": "yes" }],
+      "hoursPerBatch": { "batchSize": 20, "content": 3, "backend": 1, "qa": 1 }
+    },
+    {
+      "id": "translation_method",
+      "label": "Translation Method",
+      "type": "select",
+      "options": [
+        { "value": "client_provided", "label": "Client-provided", "multiplier.content": 1 },
+        { "value": "human_agency", "label": "Human agency", "multiplier.content": 0.8, "hours.pm": 2 },
+        { "value": "ai_postedit", "label": "AI + post-edit", "multiplier.content": 0.7, "hours.qa": 4 }
+      ],
+      "default": "client_provided"
+    },
+    {
+      "id": "rtl_support",
+      "label": "RTL Support",
+      "type": "select",
+      "options": [
+        { "value": "no", "label": "No" },
+        { "value": "yes", "label": "Yes", "hours.frontend": 6, "hours.qa": 4 }
+      ],
+      "default": "no"
+    },
+
+    {
+      "id": "forms_simple",
+      "label": "Simple Forms (contact/newsletter)",
+      "type": "select",
+      "options": [
+        { "value": "no", "label": "No" },
+        { "value": "yes", "label": "Yes", "hours.backend": 2, "hours.frontend": 2, "hours.qa": 1 }
+      ],
+      "default": "yes"
+    },
+    {
+      "id": "forms_complex",
+      "label": "Complex/Multi-step Forms",
+      "type": "number",
+      "min": 0, "max": 20, "default": 0,
+      "hoursPerUnit": { "frontend": 6, "backend": 8, "qa": 2 }
+    },
+    {
+      "id": "captcha",
+      "label": "Bot Protection (reCAPTCHA/hCaptcha)",
+      "type": "select",
+      "options": [
+        { "value": "no", "label": "No" },
+        { "value": "yes", "label": "Yes", "hours.backend": 1, "hours.frontend": 1, "hours.qa": 0.5 }
+      ],
+      "default": "yes"
+    },
+    {
+      "id": "crm_automation",
+      "label": "CRM Automation (workflows)",
+      "type": "select",
+      "options": [
+        { "value": "no", "label": "No" },
+        { "value": "yes", "label": "Yes", "hours.backend": 8, "hours.qa": 2, "hours.pm": 2 }
+      ],
+      "default": "no"
+    },
+
+    {
+      "id": "analytics_depth",
+      "label": "Analytics Depth",
+      "type": "select",
+      "options": [
+        { "value": "basic_ga4", "label": "Basic GA4", "hours.backend": 2, "hours.frontend": 2 },
+        { "value": "ga4_events", "label": "GA4 + Key Events", "hours.backend": 6, "hours.frontend": 4 },
+        { "value": "ga4_gtm_matrix", "label": "GA4 via GTM Matrix", "hours.backend": 12, "hours.frontend": 8, "hours.qa": 4 }
+      ],
+      "default": "basic_ga4"
+    },
+    {
+      "id": "consent_banner",
+      "label": "Cookie/Consent Banner (GDPR)",
+      "type": "select",
+      "options": [
+        { "value": "no", "label": "No" },
+        { "value": "yes", "label": "Yes", "hours.frontend": 3, "hours.backend": 2, "hours.qa": 1 }
+      ],
+      "default": "yes"
+    },
+    {
+      "id": "legal_pages",
+      "label": "Legal Pages",
+      "type": "multiselect",
+      "options": [
+        { "value": "privacy", "label": "Privacy Policy", "hours.content": 1, "hours.frontend": 0.5, "hours.qa": 0.3 },
+        { "value": "tos", "label": "Terms of Service", "hours.content": 1, "hours.frontend": 0.5, "hours.qa": 0.3 },
+        { "value": "cookies", "label": "Cookies Page", "hours.content": 1, "hours.frontend": 0.5, "hours.qa": 0.3 },
+        { "value": "impressum", "label": "Impressum", "hours.content": 1, "hours.frontend": 0.5, "hours.qa": 0.3 }
+      ],
+      "maxSelected": 4
+    },
+    {
+      "id": "pii_minimization",
+      "label": "PII Minimization Review",
+      "type": "select",
+      "options": [
+        { "value": "no", "label": "No" },
+        { "value": "yes", "label": "Yes", "hours.pm": 2, "hours.backend": 2 }
+      ],
+      "default": "no"
+    },
+
+    {
+      "id": "uptime_sla",
+      "label": "Uptime/SLA Target",
+      "type": "select",
+      "options": [
+        { "value": "best_effort", "label": "Best effort" },
+        { "value": "99.5", "label": "99.5%", "hours.devops": 6 },
+        { "value": "99.9", "label": "99.9%", "hours.devops": 14 }
+      ],
+      "default": "best_effort"
+    },
+    {
+      "id": "monitoring",
+      "label": "Monitoring/Alerts",
+      "type": "select",
+      "options": [
+        { "value": "light", "label": "Light", "hours.devops": 2 },
+        { "value": "standard", "label": "Standard", "hours.devops": 6 },
+        { "value": "enhanced", "label": "Enhanced", "hours.devops": 12 }
+      ],
+      "default": "light"
+    },
+    {
+      "id": "backups",
+      "label": "Backups & Retention",
+      "type": "select",
+      "options": [
+        { "value": "light", "label": "Light", "hours.devops": 2 },
+        { "value": "standard", "label": "Standard", "hours.devops": 4 },
+        { "value": "enhanced", "label": "Enhanced", "hours.devops": 8 }
+      ],
+      "default": "standard"
+    },
+    {
+      "id": "cdn_cache",
+      "label": "CDN & Caching Strategy",
+      "type": "select",
+      "options": [
+        { "value": "default", "label": "Defaults" },
+        { "value": "aggressive", "label": "Aggressive cache", "hours.devops": 3 },
+        { "value": "custom_rules", "label": "Custom rules", "hours.devops": 8, "hours.frontend": 2 }
+      ],
+      "default": "default"
+    },
+
+    {
+      "id": "collaboration",
+      "label": "Collaboration Model",
+      "type": "select",
+      "options": [
+        { "value": "solo", "label": "Solo", "multiplier.pm": 0.9 },
+        { "value": "small_team", "label": "Small team", "multiplier.pm": 1.0 },
+        { "value": "client_team", "label": "Client + team", "multiplier.pm": 1.2 }
+      ],
+      "default": "small_team"
+    },
+    {
+      "id": "trainings",
+      "label": "Training Sessions (count)",
+      "type": "number",
+      "min": 0, "max": 20, "default": 1,
+      "hoursPerUnit": { "pm": 1.5 }
+    },
+    {
+      "id": "maintenance_retainer",
+      "label": "Maintenance Retainer",
+      "type": "select",
+      "options": [
+        { "value": "no", "label": "No" },
+        { "value": "yes", "label": "Yes (monthly, shown separately)" }
+      ],
+      "default": "no"
+    },
+
+    {
+      "id": "stack_framework",
+      "label": "Frontend Framework",
+      "type": "select",
+      "options": [
+        { "value": "next", "label": "Next.js", "hours.devops": 2 },
+        { "value": "react_spa", "label": "React SPA", "hours.frontend": 8, "hours.backend": 4, "hours.devops": 4 },
+        { "value": "wordpress_theme", "label": "WordPress Theme", "hours.backend": 8, "hours.devops": 2 }
+      ],
+      "default": "next"
+    },
+    {
+      "id": "api_style",
+      "label": "API Style",
+      "type": "select",
+      "options": [
+        { "value": "rest", "label": "REST" },
+        { "value": "graphql", "label": "GraphQL", "hours.backend": 8, "hours.devops": 2 },
+        { "value": "mixed", "label": "Mixed", "hours.backend": 10, "hours.devops": 3 }
+      ],
+      "default": "rest"
+    },
+    {
+      "id": "test_coverage",
+      "label": "Test Coverage Goal",
+      "type": "select",
+      "options": [
+        { "value": "smoke", "label": "Smoke tests", "hours.qa": 6 },
+        { "value": "critical_paths", "label": "Critical paths", "hours.qa": 12, "hours.devops": 4 },
+        { "value": "broader", "label": "Broader coverage", "hours.qa": 24, "hours.devops": 6 }
+      ],
+      "default": "critical_paths"
+    },
+    {
+      "id": "ci_cd",
+      "label": "CI/CD Complexity",
+      "type": "select",
+      "options": [
+        { "value": "light", "label": "Light", "hours.devops": 4 },
+        { "value": "standard", "label": "Standard", "hours.devops": 8 },
+        { "value": "enhanced", "label": "Enhanced", "hours.devops": 16 }
+      ],
+      "default": "standard"
     }
   ],
 
@@ -330,96 +600,6 @@
     {
       "if": { "id": "cms_choice", "equals": "none" },
       "then": { "hide": ["migration"], "adjust": [{ "id": "content_state", "set": "ready" }] }
-    },
-    {
-      "if": { "id": "project_type", "equals": "webapp" },
-      "then": { "show": ["auth"], "adjust": [{ "id": "pages_reused_count", "set": 5 }] }
-    }
-  ],
-
-  "presets": [
-    {
-      "id": "preset_brochure_small",
-      "label": "Small Brochure (1‑lang)",
-      "country": "FR",
-      "values": {
-        "project_type": "brochure",
-        "brand_design": "light",
-        "pages_unique": 5,
-        "pages_reused_count": 12,
-        "cms_choice": "sanity",
-        "i18n_locales": 1,
-        "auth": "none",
-        "integrations": ["analytics", "emailing"],
-        "performance_target": "good",
-        "accessibility": "aa_partial",
-        "animations": "moderate",
-        "content_state": "partial",
-        "seo_package": "tech_onpage",
-        "security_hardening": "standard",
-        "hosting_stack": "vercel_static",
-        "migration": "none",
-        "testing_scope": ["devices"],
-        "handover_docs": "readme",
-        "risk_level": "medium",
-        "timeline_pressure": "normal"
-      }
-    },
-    {
-      "id": "preset_smb_ecommerce",
-      "label": "SMB E‑commerce",
-      "country": "NL",
-      "values": {
-        "project_type": "ecommerce",
-        "brand_design": "full",
-        "pages_unique": 8,
-        "pages_reused_count": 30,
-        "cms_choice": "shopify",
-        "i18n_locales": 2,
-        "ecom_depth": "standard",
-        "sku_count": 250,
-        "auth": "email",
-        "integrations": ["analytics", "payments", "emailing", "search"],
-        "performance_target": "good",
-        "accessibility": "aa_partial",
-        "animations": "moderate",
-        "content_state": "partial",
-        "seo_package": "tech_keyword",
-        "security_hardening": "enhanced",
-        "hosting_stack": "vercel_static",
-        "migration": "semi_auto",
-        "testing_scope": ["browsers", "devices"],
-        "handover_docs": "readme",
-        "risk_level": "medium",
-        "timeline_pressure": "normal"
-      }
-    },
-    {
-      "id": "preset_multilingual_corporate",
-      "label": "Multilingual Corporate",
-      "country": "US",
-      "values": {
-        "project_type": "brochure",
-        "brand_design": "full",
-        "pages_unique": 12,
-        "pages_reused_count": 60,
-        "cms_choice": "sanity",
-        "i18n_locales": 4,
-        "auth": "oauth",
-        "integrations": ["analytics", "crm", "emailing"],
-        "performance_target": "excellent",
-        "accessibility": "aa_full",
-        "animations": "moderate",
-        "content_state": "copy_needed",
-        "seo_package": "full",
-        "security_hardening": "enhanced",
-        "hosting_stack": "node_server",
-        "migration": "manual",
-        "testing_scope": ["browsers", "devices", "automation"],
-        "handover_docs": "playbook",
-        "risk_level": "high",
-        "timeline_pressure": "rush10"
-      }
     }
   ],
 
@@ -438,8 +618,8 @@
   ],
   "exclusions": [
     "Stock photography/licensing fees.",
-    "3rd‑party subscription costs (CMS, search, WAF, etc.).",
-    "Ongoing SEO link‑building and PR.",
+    "3rd-party subscription costs (CMS, search, WAF, etc.).",
+    "Ongoing SEO link-building and PR.",
     "Custom native mobile apps."
   ]
 }
