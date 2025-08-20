@@ -1,12 +1,15 @@
-// Minimal estimator that understands:
-// - options with hours.* (e.g., "hours.frontend": 12)
-// - number levers with hoursPerUnit
-// - locales: hoursBase + hoursPerExtraLocale*(n-1)
-// - multipliers: "multiplier.role" and "multiplier.all"
-// - global PM/QA percentages
-// - risk bands => P80
+// Estimation engine v0.4.1
+// - Blended hourly rate mode (vs. country role rates)
+// - Manual role adjustments: selections._roleAdjust?: Partial<Record<Role, number>>
+// - Hours model: number/select/multiselect + hoursPerUnit/Batch/Base/PerExtraLocale
+// - Multipliers (multiplier.role / multiplier.all)
+// - Dependencies (hide/adjust) + visibleWhen
+// - PM/QA overhead + P50/P80
+// - Helpers: visibleLeverIdSet, applyPreset
 
-type Role =
+/* ================== Types ================== */
+
+export type Role =
   | "design"
   | "frontend"
   | "backend"
@@ -16,46 +19,91 @@ type Role =
   | "seo"
   | "content";
 
-type HoursByRole = Partial<Record<Role, number>>;
-type RatesByRole = Record<Role, number>;
+export type RatesByRole = Record<Role, number>;
 
 type Country = {
   code: string;
   name: string;
   currency: string;
-  baseRates: RatesByRole;
+  baseRates: RatesByRole & Partial<Record<"fullstack", number>>;
   tax: { vatIncluded: boolean; vatPercent: number };
 };
 
-type LeverOption = Record<string, any> & { value: string; label: string };
-type Lever =
-  | {
-      id: string;
-      label: string;
-      type: "select";
-      options: LeverOption[];
-      default?: string;
-    }
-  | {
-      id: string;
-      label: string;
-      type: "number";
-      min?: number;
-      max?: number;
-      default?: number;
-      hoursPerUnit?: Partial<Record<Role, number>>;
-      hoursBase?: Partial<Record<Role, number>>;
-      hoursPerExtraLocale?: Partial<Record<Role, number>>;
-    };
+type VisibleWhenRule = { id: string; equals: string | number | boolean };
 
-type Config = {
+type LeverCommon = {
+  id: string;
+  label: string;
+  group?: string;
+  help?: string;
+  visibleWhen?: VisibleWhenRule[];
+};
+
+type LeverSelect = LeverCommon & {
+  type: "select";
+  options: Array<Record<string, any> & { value: string; label: string }>;
+  default?: string;
+};
+
+type LeverMultiselect = LeverCommon & {
+  type: "multiselect";
+  options: Array<Record<string, any> & { value: string; label: string }>;
+  maxSelected?: number;
+};
+
+type LeverNumber = LeverCommon & {
+  type: "number";
+  unit?: string;
+  min?: number;
+  max?: number;
+  default?: number;
+  hoursPerUnit?: Partial<Record<Role, number>>;
+  hoursPerBatch?: { batchSize: number } & Partial<Record<Role, number>>;
+  hoursBase?: Partial<Record<Role, number>>;
+  hoursPerExtraLocale?: Partial<Record<Role, number>>;
+};
+
+export type Lever = LeverSelect | LeverMultiselect | LeverNumber;
+
+type Dependency = {
+  if: { id: string; equals: string | number | boolean };
+  then?: {
+    hide?: string[];
+    adjust?: Array<{ id: string; set: any }>;
+    show?: string[];
+  };
+};
+
+export type Config = {
+  version: string;
+  currencyDefault: string;
+  currencies?: Record<string, { symbol: string; fxToEUR: number }>;
+  ui?: {
+    groups?: { id: string; label: string }[];
+    pricing?: {
+      allowBlendedRate?: boolean;
+      defaultRateMode?: "country_roles" | "blended";
+      defaultBlendedRate?: number;
+    };
+  };
   countries: Country[];
   globalOverheads: {
     pmPercentOfBuild: number;
     qaPercentOfBuild: number;
     contingencyRiskBands: { low: number; medium: number; high: number };
+    maintenance?: { warrantyWeeks: number; retainerMonthlyPercent: number };
   };
   levers: Lever[];
+  dependencies?: Dependency[];
+  presets?: Array<{ id: string; label: string; country: string; values: Record<string, any> }>;
+  outputConfig?: {
+    showBands?: Array<"P50" | "P80">;
+    rounding?: { currency?: number; hours?: number };
+    includeAssumptions?: boolean;
+    includeExclusions?: boolean;
+  };
+  assumptions?: string[];
+  exclusions?: string[];
 };
 
 export type Selections = Record<string, any>;
@@ -69,27 +117,62 @@ export type EstimateResult = {
   p50: { hours: number; cost: number };
   p80: { hours: number; cost: number };
   currency: string;
+  currencySymbol: string;
+  debug: {
+    countryCode: string;
+    hiddenLeverIds: string[];
+    appliedMultipliers: Partial<Record<Role | "all", number>>;
+    rateMode: "country_roles" | "blended";
+    blendedRate?: number;
+    preAdjustHours: Record<Role, number>;
+    roleAdjust: Partial<Record<Role, number>>;
+  };
 };
 
-const ROLES: Role[] = [
-  "design",
-  "frontend",
-  "backend",
-  "pm",
-  "qa",
-  "devops",
-  "seo",
-  "content"
-];
+/* ================== Consts & helpers ================== */
 
-function cloneZero(): Record<Role, number> {
-  return ROLES.reduce((acc, r) => ({ ...acc, [r]: 0 }), {} as Record<Role, number>);
+const ROLES: Role[] = ["design", "frontend", "backend", "pm", "qa", "devops", "seo", "content"];
+const BUILD_ROLES: Role[] = ["design", "frontend", "backend", "devops", "seo", "content"];
+
+function cloneZeros(): Record<Role, number> {
+  return ROLES.reduce((acc, r) => ((acc[r] = 0), acc), {} as Record<Role, number>);
 }
 
-function applyMultiplierHours(
-  hours: Record<Role, number>,
-  multipliers: Partial<Record<Role | "all", number>>
-) {
+function round(n: number, places = 0): number {
+  const p = Math.pow(10, places);
+  return Math.round(n * p) / p;
+}
+
+function clamp(n: number, min?: number, max?: number): number {
+  if (typeof n !== "number" || Number.isNaN(n)) return min ?? 0;
+  if (min != null && n < min) return min;
+  if (max != null && n > max) return max;
+  return n;
+}
+
+function currencySymbolFor(config: Config, currencyCode: string): string {
+  const sym = config.currencies?.[currencyCode]?.symbol;
+  if (sym) return sym;
+  if (currencyCode === "EUR") return "€";
+  if (currencyCode === "USD") return "$";
+  if (currencyCode === "GBP") return "£";
+  return currencyCode;
+}
+
+function visibleForLever(lever: Lever, selections: Selections): boolean {
+  if (!lever.visibleWhen || lever.visibleWhen.length === 0) return true;
+  return lever.visibleWhen.every((r) => selections[r.id] === r.equals);
+}
+
+function addHours(target: Record<Role, number>, add?: Partial<Record<Role, number>>, factor = 1) {
+  if (!add) return;
+  for (const r of ROLES) {
+    const v = add[r];
+    if (v != null) target[r] += v * factor;
+  }
+}
+
+function applyMultiplierHours(hours: Record<Role, number>, multipliers: Partial<Record<Role | "all", number>>) {
   const allMul = multipliers["all"] ?? 1;
   for (const r of ROLES) {
     const m = multipliers[r] ?? 1;
@@ -97,122 +180,236 @@ function applyMultiplierHours(
   }
 }
 
-function addHours(target: Record<Role, number>, add: Partial<Record<Role, number>>, factor = 1) {
-  for (const r of ROLES) {
-    if (add[r] != null) target[r] += (add[r] as number) * factor;
-  }
-}
-
-export function computeEstimate(config: Config, selections: Selections): EstimateResult {
-  const { countries, globalOverheads, levers } = config;
-
-  // Country
-  const countryCode: string = selections["_country"] ?? countries[0].code;
-  const country = countries.find(c => c.code === countryCode) ?? countries[0];
-  const rates = country.baseRates;
-
-  // 1) Base hours accumulation
-  const hours = cloneZero();
-
-  for (const lever of levers) {
-    const value = selections[lever.id] ?? (lever as any).default;
-
-    if (lever.type === "select") {
-      const opt = lever.options.find(o => o.value === value) ?? lever.options[0];
-
-      // Add any hours.* fields
-      for (const key of Object.keys(opt)) {
-        if (key.startsWith("hours.")) {
-          const role = key.split(".")[1] as Role;
-          hours[role] += Number(opt[key]) || 0;
+function applyDependencies(config: Config, baseSelections: Selections): { selections: Selections; hiddenIds: Set<string> } {
+  let selections = { ...baseSelections };
+  const hiddenIds = new Set<string>();
+  for (let pass = 0; pass < 6; pass++) {
+    let changed = false;
+    for (const dep of config.dependencies ?? []) {
+      if (selections[dep.if.id] === dep.if.equals) {
+        for (const id of dep.then?.hide ?? []) hiddenIds.add(id);
+        for (const adj of dep.then?.adjust ?? []) {
+          if (selections[adj.id] !== adj.set) {
+            selections = { ...selections, [adj.id]: adj.set };
+            changed = true;
+          }
         }
       }
-
-      // Collect multipliers but apply after all base hours are summed
-      // We'll accumulate a combined multiplier per role
     }
+    if (!changed) break;
+  }
+  return { selections, hiddenIds };
+}
+
+/* ================== Core engine ================== */
+
+export function computeEstimate(config: Config, rawSelections: Selections): EstimateResult {
+  // Country & currency
+  const defaultCountry = config.countries[0];
+  const countryCode = String(rawSelections?._country ?? defaultCountry.code);
+  const country = config.countries.find((c) => c.code === countryCode) ?? defaultCountry;
+  const currency = country.currency ?? config.currencyDefault;
+  const currencySymbol = currencySymbolFor(config, currency);
+
+  // Rate mode
+  const defaultRateMode = config.ui?.pricing?.defaultRateMode ?? "country_roles";
+  const rateMode = (rawSelections?._rateMode ?? defaultRateMode) as "country_roles" | "blended";
+  const blendedRate = Number(rawSelections?._blendedRate ?? config.ui?.pricing?.defaultBlendedRate ?? 0);
+
+  // Seed defaults
+  const seeded: Selections = { _country: country.code, _rateMode: rateMode, _blendedRate: blendedRate, ...rawSelections };
+  for (const lever of config.levers) {
+    if (seeded[lever.id] == null && (lever as any).default != null) seeded[lever.id] = (lever as any).default;
+    if (lever.type === "multiselect" && seeded[lever.id] == null) seeded[lever.id] = [];
+  }
+  if (seeded._roleAdjust == null) seeded._roleAdjust = {};
+
+  // Dependencies
+  const { selections, hiddenIds } = applyDependencies(config, seeded);
+
+  // Build hours (before manual adjustments)
+  const hours = cloneZeros();
+
+  for (const lever of config.levers) {
+    if (hiddenIds.has(lever.id)) continue;
+    if (!visibleForLever(lever, selections)) continue;
+
+    const value = selections[lever.id];
 
     if (lever.type === "number") {
-      const n = Number(value ?? lever.default ?? 0);
-
-      // hoursPerUnit
-      if (lever.hoursPerUnit) {
-        addHours(hours, lever.hoursPerUnit, n);
-      }
-
-      // i18n model: hoursBase + hoursPerExtraLocale*(n-1)
+      const n = clamp(Number(value ?? lever.default ?? 0), lever.min, lever.max);
+      if (lever.hoursPerUnit) addHours(hours, lever.hoursPerUnit, n);
       if (lever.hoursBase || lever.hoursPerExtraLocale) {
-        const base = lever.hoursBase ?? {};
-        const extra = lever.hoursPerExtraLocale ?? {};
-        addHours(hours, base, 1);
-        if (n > 1) addHours(hours, extra, n - 1);
+        addHours(hours, lever.hoursBase, 1);
+        if (n > 1) addHours(hours, lever.hoursPerExtraLocale, n - 1);
+      }
+      if (lever.hoursPerBatch && lever.hoursPerBatch.batchSize > 0) {
+        const { batchSize, ...roleHours } = lever.hoursPerBatch;
+        const batches = n > 0 ? Math.ceil(n / batchSize) : 0;
+        addHours(hours, roleHours as Partial<Record<Role, number>>, batches);
+      }
+    }
+
+    if (lever.type === "select") {
+      const opt = lever.options.find((o) => o.value === value) ?? lever.options[0];
+      if (opt) {
+        for (const key of Object.keys(opt)) {
+          if (key.startsWith("hours.")) {
+            const role = key.split(".")[1] as Role;
+            hours[role] += Number(opt[key]) || 0;
+          }
+        }
+      }
+    }
+
+    if (lever.type === "multiselect") {
+      const arr: string[] = Array.isArray(value) ? value : [];
+      for (const v of arr) {
+        const opt = lever.options.find((o) => o.value === v);
+        if (!opt) continue;
+        for (const key of Object.keys(opt)) {
+          if (key.startsWith("hours.")) {
+            const role = key.split(".")[1] as Role;
+            hours[role] += Number(opt[key]) || 0;
+          }
+        }
       }
     }
   }
 
-  // 2) Apply multipliers (from selected select options)
+  // Multipliers
   const multipliers: Partial<Record<Role | "all", number>> = {};
-  for (const lever of levers) {
-    if (lever.type !== "select") continue;
-    const value = selections[lever.id] ?? lever.default;
-    const opt = lever.options.find(o => o.value === value);
-    if (!opt) continue;
-    for (const key of Object.keys(opt)) {
-      if (key.startsWith("multiplier.")) {
-        const k = key.split(".")[1] as Role | "all";
-        multipliers[k] = (multipliers[k] ?? 1) * Number(opt[key]);
+  for (const lever of config.levers) {
+    if (hiddenIds.has(lever.id)) continue;
+    if (!visibleForLever(lever, selections)) continue;
+
+    if (lever.type === "select") {
+      const opt = lever.options.find((o) => o.value === selections[lever.id]);
+      if (opt) {
+        for (const key of Object.keys(opt)) {
+          if (key.startsWith("multiplier.")) {
+            const k = key.split(".")[1] as Role | "all";
+            const val = Number(opt[key]);
+            multipliers[k] = (multipliers[k] ?? 1) * (isFinite(val) ? val : 1);
+          }
+        }
+      }
+    }
+
+    if (lever.type === "multiselect") {
+      const arr: string[] = Array.isArray(selections[lever.id]) ? selections[lever.id] : [];
+      for (const v of arr) {
+        const opt = lever.options.find((o) => o.value === v);
+        if (!opt) continue;
+        for (const key of Object.keys(opt)) {
+          if (key.startsWith("multiplier.")) {
+            const k = key.split(".")[1] as Role | "all";
+            const val = Number(opt[key]);
+            multipliers[k] = (multipliers[k] ?? 1) * (isFinite(val) ? val : 1);
+          }
+        }
       }
     }
   }
   if (Object.keys(multipliers).length) applyMultiplierHours(hours, multipliers);
 
-  // 3) Subtotal (build only, before PM/QA overheads)
-  const subtotalHours =
-    hours.design + hours.frontend + hours.backend + hours.devops + hours.seo + hours.content;
-  const subtotalCost =
-    hours.design * rates.design +
-    hours.frontend * rates.frontend +
-    hours.backend * rates.backend +
-    hours.devops * rates.devops +
-    hours.seo * rates.seo +
-    hours.content * rates.content;
+  // Keep a snapshot before manual edits
+  const preAdjust = { ...hours };
 
-  // 4) PM/QA overheads (percentage of build)
-  const pmHours = subtotalHours * globalOverheads.pmPercentOfBuild;
-  const qaHours = subtotalHours * globalOverheads.qaPercentOfBuild;
-  const pmCost = pmHours * rates.pm;
-  const qaCost = qaHours * rates.qa;
+  // Manual role adjustments (delta hours) — apply to BUILD roles before PM/QA
+  const roleAdjust: Partial<Record<Role, number>> = selections._roleAdjust ?? {};
+  for (const r of BUILD_ROLES) {
+    const delta = Number(roleAdjust[r] ?? 0);
+    if (!Number.isNaN(delta) && delta !== 0) hours[r] += delta;
+  }
 
-  const p50Hours = subtotalHours + pmHours + qaHours;
-  const p50Cost = subtotalCost + pmCost + qaCost;
+  // Rates: blended or role-based
+  const rates = country.baseRates;
+  const useBlended = rateMode === "blended";
+  const rateFor = (r: Role) => (useBlended ? blendedRate : (rates[r] ?? 0));
 
-  // 5) Risk (P80)
-  const riskLevel = selections["risk_level"] ?? "medium";
-  const riskPct = globalOverheads.contingencyRiskBands[riskLevel as "low" | "medium" | "high"] ?? 0.12;
-  const p80Hours = p50Hours * (1 + riskPct);
-  const p80Cost = p50Cost * (1 + riskPct);
+  // Subtotals
+  const subtotalHours = BUILD_ROLES.reduce((sum, r) => sum + (hours[r] || 0), 0);
+  const subtotalCost = BUILD_ROLES.reduce((sum, r) => sum + (hours[r] || 0) * rateFor(r), 0);
+
+  // Overheads
+  const pmHours = subtotalHours * config.globalOverheads.pmPercentOfBuild;
+  const qaHours = subtotalHours * config.globalOverheads.qaPercentOfBuild;
+  const pmCost = pmHours * rateFor("pm");
+  const qaCost = qaHours * rateFor("qa");
+
+  // Bands
+  const p50HoursRaw = subtotalHours + pmHours + qaHours;
+  const p50CostRaw = subtotalCost + pmCost + qaCost;
+
+  const riskLevel = (selections["risk_level"] ?? "medium") as "low" | "medium" | "high";
+  const riskPct = config.globalOverheads.contingencyRiskBands[riskLevel] ?? 0.12;
+  const p80HoursRaw = p50HoursRaw * (1 + riskPct);
+  const p80CostRaw = p50CostRaw * (1 + riskPct);
+
+  // Rounding
+  const hoursPlaces = config.outputConfig?.rounding?.hours ?? 1;
+  const moneyPlaces = config.outputConfig?.rounding?.currency ?? 0;
+
+  const hoursByRoleRounded = ROLES.reduce((acc, r) => {
+    // PM/QA are not in BUILD_ROLES totals; we report their own hours via overheads, but keep per-role zeros for clarity
+    const base = r === "pm" ? pmHours : r === "qa" ? qaHours : hours[r] || 0;
+    acc[r] = round(base, hoursPlaces);
+    return acc;
+  }, {} as Record<Role, number>);
+
+  const costByRoleRounded = ROLES.reduce((acc, r) => {
+    const baseCost = r === "pm" ? pmCost : r === "qa" ? qaCost : (hours[r] || 0) * rateFor(r);
+    acc[r] = round(baseCost, moneyPlaces);
+    return acc;
+  }, {} as Record<Role, number>);
 
   return {
-    hoursByRole: hours,
-    costByRole: {
-      design: hours.design * rates.design,
-      frontend: hours.frontend * rates.frontend,
-      backend: hours.backend * rates.backend,
-      devops: hours.devops * rates.devops,
-      seo: hours.seo * rates.seo,
-      content: hours.content * rates.content,
-      pm: pmCost,
-      qa: qaCost
-    } as Record<Role, number>,
-    subtotalHours,
-    subtotalCost,
-    overheads: { pmHours, qaHours, pmCost, qaCost },
-    p50: { hours: round1(p50Hours), cost: Math.round(p50Cost) },
-    p80: { hours: round1(p80Hours), cost: Math.round(p80Cost) },
-    currency: country.currency
+    hoursByRole: hoursByRoleRounded,
+    costByRole: costByRoleRounded,
+    subtotalHours: round(subtotalHours, hoursPlaces),
+    subtotalCost: round(subtotalCost, moneyPlaces),
+    overheads: {
+      pmHours: round(pmHours, hoursPlaces),
+      qaHours: round(qaHours, hoursPlaces),
+      pmCost: round(pmCost, moneyPlaces),
+      qaCost: round(qaCost, moneyPlaces),
+    },
+    p50: { hours: round(p50HoursRaw, hoursPlaces), cost: round(p50CostRaw, moneyPlaces) },
+    p80: { hours: round(p80HoursRaw, hoursPlaces), cost: round(p80CostRaw, moneyPlaces) },
+    currency,
+    currencySymbol,
+    debug: {
+      countryCode: country.code,
+      hiddenLeverIds: [...hiddenIds],
+      appliedMultipliers: multipliers,
+      rateMode,
+      blendedRate: useBlended ? blendedRate : undefined,
+      preAdjustHours: preAdjust,
+      roleAdjust,
+    },
   };
 }
 
-function round1(n: number) {
-  return Math.round(n * 10) / 10;
+/* ================== UI helpers ================== */
+
+export function visibleLeverIdSet(config: Config, rawSelections: Selections): Set<string> {
+  const seeded: Selections = { ...rawSelections };
+  for (const l of config.levers) {
+    if (seeded[l.id] == null && (l as any).default != null) seeded[l.id] = (l as any).default;
+    if (l.type === "multiselect" && seeded[l.id] == null) seeded[l.id] = [];
+  }
+  const { selections, hiddenIds } = applyDependencies(config, seeded);
+  const visible = new Set<string>();
+  for (const lever of config.levers) {
+    if (hiddenIds.has(lever.id)) continue;
+    if (visibleForLever(lever, selections)) visible.add(lever.id);
+  }
+  return visible;
+}
+
+export function applyPreset(config: Config, current: Selections, presetId: string): Selections {
+  const p = config.presets?.find((x) => x.id === presetId);
+  if (!p) return current;
+  return { ...current, ...p.values, _country: p.country };
 }

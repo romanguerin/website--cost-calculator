@@ -1,10 +1,28 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.2",
   "currencyDefault": "EUR",
   "currencies": {
     "EUR": { "symbol": "€", "fxToEUR": 1 },
     "USD": { "symbol": "$", "fxToEUR": 0.92 },
     "GBP": { "symbol": "£", "fxToEUR": 1.17 }
+  },
+
+  "ui": {
+    "groups": [
+      { "id": "core", "label": "Core Setup (Most Important)" },
+      { "id": "ecommerce", "label": "E-commerce" },
+      { "id": "content", "label": "Content & Migration" },
+      { "id": "forms_crm", "label": "Forms & CRM" },
+      { "id": "analytics_privacy", "label": "Analytics, Privacy & Legal" },
+      { "id": "ops", "label": "Non-Functional & Ops" },
+      { "id": "delivery", "label": "Team, Delivery & Maintenance" },
+      { "id": "dev", "label": "Developer Options" }
+    ],
+    "pricing": {
+      "allowBlendedRate": true,
+      "defaultRateMode": "country_roles",
+      "defaultBlendedRate": 85
+    }
   },
 
   "countries": [
@@ -13,8 +31,15 @@
       "name": "Netherlands",
       "currency": "EUR",
       "baseRates": {
-        "design": 75, "frontend": 85, "backend": 95, "fullstack": 90,
-        "pm": 80, "qa": 60, "seo": 70, "devops": 95, "content": 55
+        "design": 75,
+        "frontend": 85,
+        "backend": 95,
+        "fullstack": 90,
+        "pm": 80,
+        "qa": 60,
+        "seo": 70,
+        "devops": 95,
+        "content": 55
       },
       "tax": { "vatIncluded": false, "vatPercent": 21 }
     },
@@ -23,8 +48,15 @@
       "name": "France",
       "currency": "EUR",
       "baseRates": {
-        "design": 70, "frontend": 80, "backend": 90, "fullstack": 85,
-        "pm": 75, "qa": 55, "seo": 65, "devops": 90, "content": 50
+        "design": 70,
+        "frontend": 80,
+        "backend": 90,
+        "fullstack": 85,
+        "pm": 75,
+        "qa": 55,
+        "seo": 65,
+        "devops": 90,
+        "content": 50
       },
       "tax": { "vatIncluded": false, "vatPercent": 20 }
     },
@@ -33,8 +65,15 @@
       "name": "United States",
       "currency": "USD",
       "baseRates": {
-        "design": 110, "frontend": 125, "backend": 140, "fullstack": 130,
-        "pm": 120, "qa": 85, "seo": 100, "devops": 145, "content": 80
+        "design": 110,
+        "frontend": 125,
+        "backend": 140,
+        "fullstack": 130,
+        "pm": 120,
+        "qa": 85,
+        "seo": 100,
+        "devops": 145,
+        "content": 80
       },
       "tax": { "vatIncluded": false, "vatPercent": 0 }
     }
@@ -50,7 +89,9 @@
   "levers": [
     {
       "id": "project_type",
+      "group": "core",
       "label": "Project Type",
+      "help": "Switches major blocks like e-commerce on/off.",
       "type": "select",
       "options": [
         { "value": "brochure", "label": "Brochure/Marketing" },
@@ -61,7 +102,9 @@
     },
     {
       "id": "brand_design",
+      "group": "core",
       "label": "Brand & Visual Design",
+      "help": "From light UI polish to a full design system (tokens, components).",
       "type": "select",
       "options": [
         { "value": "none", "label": "Existing brand (no design)", "hours.design": 0 },
@@ -72,31 +115,59 @@
     },
     {
       "id": "pages_unique",
+      "group": "core",
       "label": "Unique Page Templates",
+      "help": "Distinct page designs/templates. Each adds design/dev/QA.",
       "type": "number",
       "unit": "templates",
-      "min": 1, "max": 50, "default": 6,
+      "min": 1,
+      "max": 50,
+      "default": 6,
       "hoursPerUnit": { "design": 2.5, "frontend": 3.5, "qa": 0.7 }
     },
     {
       "id": "pages_reused_count",
+      "group": "core",
       "label": "Reusable Pages (content instances)",
+      "help": "Total instances using existing templates (e.g., posts/cases).",
       "type": "number",
       "unit": "pages",
-      "min": 0, "max": 1000, "default": 20,
+      "min": 0,
+      "max": 1000,
+      "default": 20,
       "hoursPerBatch": { "batchSize": 10, "content": 2, "qa": 0.5 }
     },
     {
+      "id": "cms_choice",
+      "group": "core",
+      "label": "CMS",
+      "help": "Backend authoring setup; also influences migration.",
+      "type": "select",
+      "options": [
+        { "value": "none", "label": "No CMS (static)", "multiplier.backend": 0.9 },
+        { "value": "wordpress", "label": "WordPress", "hours.backend": 12 },
+        { "value": "sanity", "label": "Sanity (Headless)", "hours.backend": 24 },
+        { "value": "shopify", "label": "Shopify (Headless optional)", "hours.backend": 26 }
+      ],
+      "default": "sanity"
+    },
+    {
       "id": "i18n_locales",
+      "group": "core",
       "label": "Languages",
+      "help": "Base i18n setup once; each extra locale adds FE/BE/content/QA.",
       "type": "number",
-      "min": 1, "max": 12, "default": 1,
+      "min": 1,
+      "max": 12,
+      "default": 1,
       "hoursBase": { "frontend": 6, "backend": 6 },
       "hoursPerExtraLocale": { "frontend": 2.5, "backend": 2.5, "content": 4, "qa": 1.5 }
     },
     {
       "id": "animations",
+      "group": "core",
       "label": "Animations & Interactions",
+      "help": "Motion complexity affects frontend work.",
       "type": "select",
       "options": [
         { "value": "minimal", "label": "Basic transitions", "hours.frontend": 4 },
@@ -107,7 +178,9 @@
     },
     {
       "id": "seo_package",
+      "group": "core",
       "label": "SEO",
+      "help": "From technical setup to keyword mapping and content plan.",
       "type": "select",
       "options": [
         { "value": "tech_onpage", "label": "Technical + on-page setup", "hours.seo": 14 },
@@ -118,7 +191,9 @@
     },
     {
       "id": "content_state",
+      "group": "core",
       "label": "Content Readiness",
+      "help": "Are we polishing provided copy or writing from scratch?",
       "type": "select",
       "options": [
         { "value": "ready", "label": "All content provided", "multiplier.content": 0.6 },
@@ -128,20 +203,10 @@
       "default": "partial"
     },
     {
-      "id": "cms_choice",
-      "label": "CMS",
-      "type": "select",
-      "options": [
-        { "value": "none", "label": "No CMS", "multiplier.backend": 0.9 },
-        { "value": "wordpress", "label": "WordPress", "hours.backend": 12 },
-        { "value": "sanity", "label": "Sanity (Headless)", "hours.backend": 24 },
-        { "value": "shopify", "label": "Shopify (Headless optional)", "hours.backend": 26 }
-      ],
-      "default": "sanity"
-    },
-    {
       "id": "social_media",
+      "group": "core",
       "label": "Social Media (Sharing & Embeds)",
+      "help": "Sharing cards, embeds, or a dynamic feed.",
       "type": "multiselect",
       "options": [
         { "value": "sharing_meta", "label": "Sharing meta (OG/Twitter)", "hours.frontend": 2, "hours.seo": 1 },
@@ -152,7 +217,9 @@
     },
     {
       "id": "integrations",
+      "group": "core",
       "label": "3rd-Party Integrations",
+      "help": "Analytics, CRM, email, payments, search, PIM/ERP, etc.",
       "type": "multiselect",
       "options": [
         { "value": "analytics", "label": "GA4 + Consent", "hours.backend": 3, "hours.frontend": 4 },
@@ -166,7 +233,9 @@
     },
     {
       "id": "performance_target",
+      "group": "core",
       "label": "Performance Target (Core Web Vitals)",
+      "help": "Higher targets mean more FE tuning and some DevOps work.",
       "type": "select",
       "options": [
         { "value": "basic", "label": "Reasonable defaults", "multiplier.frontend": 1, "multiplier.devops": 1 },
@@ -177,7 +246,9 @@
     },
     {
       "id": "accessibility",
+      "group": "core",
       "label": "Accessibility (WCAG)",
+      "help": "Compliance level and remediation scope.",
       "type": "select",
       "options": [
         { "value": "aa_partial", "label": "AA (pragmatic)", "hours.qa": 10, "hours.frontend": 10 },
@@ -188,7 +259,9 @@
     },
     {
       "id": "hosting_stack",
+      "group": "core",
       "label": "Hosting/Stack",
+      "help": "Deployment model; affects DevOps and runtime behavior.",
       "type": "select",
       "options": [
         { "value": "vercel_static", "label": "Static/SSR on Vercel", "hours.devops": 6 },
@@ -199,17 +272,21 @@
     },
     {
       "id": "security_hardening",
+      "group": "core",
       "label": "Security & Compliance",
+      "help": "WAF, rate-limiting, scans and policies.",
       "type": "select",
       "options": [
-        { "value": "standard", "label": "Best practices", "hours.devops": 6 },
-        { "value": "enhanced", "label": "WAF, rate-limit, scans", "hours.devops": 16 }
+        { "value": "standard", "label": "Standard best practices", "hours.devops": 6 },
+        { "value": "enhanced", "label": "WAF + rate-limit + scans", "hours.devops": 16 }
       ],
       "default": "standard"
     },
     {
       "id": "testing_scope",
+      "group": "core",
       "label": "Testing Scope",
+      "help": "Manual test matrices and basic automation options.",
       "type": "multiselect",
       "options": [
         { "value": "browsers", "label": "Cross-browser matrix", "hours.qa": 10 },
@@ -219,7 +296,9 @@
     },
     {
       "id": "handover_docs",
+      "group": "core",
       "label": "Handover & Docs",
+      "help": "From README+videos to an operations playbook.",
       "type": "select",
       "options": [
         { "value": "readme", "label": "README + Looms", "hours.pm": 6 },
@@ -229,7 +308,9 @@
     },
     {
       "id": "timeline_pressure",
+      "group": "core",
       "label": "Timeline Pressure",
+      "help": "Rush multipliers reflect inefficiencies under tight deadlines.",
       "type": "select",
       "options": [
         { "value": "normal", "label": "Normal" },
@@ -240,7 +321,9 @@
     },
     {
       "id": "risk_level",
+      "group": "core",
       "label": "Risk Level",
+      "help": "Controls contingency for the P80 band.",
       "type": "select",
       "options": [
         { "value": "low", "label": "Low" },
@@ -252,7 +335,9 @@
 
     {
       "id": "ecom_depth",
+      "group": "ecommerce",
       "label": "E-commerce Scope",
+      "help": "From simple payments to full catalog, taxes, shipping, promos.",
       "type": "select",
       "visibleWhen": [{ "id": "project_type", "equals": "ecommerce" }],
       "options": [
@@ -264,15 +349,21 @@
     },
     {
       "id": "sku_count",
+      "group": "ecommerce",
       "label": "Number of Products",
+      "help": "Content entry/QA in batches; importers reduce time.",
       "type": "number",
-      "min": 0, "max": 20000, "default": 100,
+      "min": 0,
+      "max": 20000,
+      "default": 100,
       "visibleWhen": [{ "id": "project_type", "equals": "ecommerce" }],
       "hoursPerBatch": { "batchSize": 50, "content": 3, "qa": 1 }
     },
     {
       "id": "payments_providers",
+      "group": "ecommerce",
       "label": "Payment Providers",
+      "help": "Each provider adds integration + QA time.",
       "type": "multiselect",
       "visibleWhen": [{ "id": "project_type", "equals": "ecommerce" }],
       "options": [
@@ -285,7 +376,9 @@
     },
     {
       "id": "tax_shipping_complexity",
+      "group": "ecommerce",
       "label": "Taxes & Shipping Complexity",
+      "help": "Number of regions/rates and custom rules affect BE & QA.",
       "type": "select",
       "visibleWhen": [{ "id": "project_type", "equals": "ecommerce" }],
       "options": [
@@ -297,7 +390,9 @@
     },
     {
       "id": "subscriptions",
+      "group": "ecommerce",
       "label": "Subscriptions/Billing",
+      "help": "Adds gateway logic, retries/dunning, proration.",
       "type": "select",
       "visibleWhen": [{ "id": "project_type", "equals": "ecommerce" }],
       "options": [
@@ -308,7 +403,9 @@
     },
     {
       "id": "variants_promos",
+      "group": "ecommerce",
       "label": "Variants & Promotions",
+      "help": "Attribute/variant modeling and promo logic.",
       "type": "select",
       "visibleWhen": [{ "id": "project_type", "equals": "ecommerce" }],
       "options": [
@@ -319,7 +416,9 @@
     },
     {
       "id": "inventory_sync",
+      "group": "ecommerce",
       "label": "Inventory/ERP/PIM Sync",
+      "help": "Sync jobs, webhooks, retries; adds DevOps & QA.",
       "type": "select",
       "visibleWhen": [{ "id": "project_type", "equals": "ecommerce" }],
       "options": [
@@ -331,7 +430,9 @@
 
     {
       "id": "migration",
+      "group": "content",
       "label": "Content Migration",
+      "help": "Semi-auto uses scripts; manual requires human QA & formatting.",
       "type": "select",
       "options": [
         { "value": "none", "label": "No legacy content", "hours.content": 0 },
@@ -342,21 +443,31 @@
     },
     {
       "id": "content_creation_pages",
+      "group": "content",
       "label": "Pages Requiring Copywriting",
+      "help": "Net-new pages needing copy; includes SEO review.",
       "type": "number",
-      "min": 0, "max": 500, "default": 0,
+      "min": 0,
+      "max": 500,
+      "default": 0,
       "hoursPerUnit": { "content": 1.5, "seo": 0.5 }
     },
     {
       "id": "assets_to_process",
+      "group": "content",
       "label": "Image/Asset Processing (count)",
+      "help": "Optimization, formats, alt text, metadata.",
       "type": "number",
-      "min": 0, "max": 5000, "default": 50,
+      "min": 0,
+      "max": 5000,
+      "default": 50,
       "hoursPerBatch": { "batchSize": 50, "content": 2, "qa": 0.5 }
     },
     {
       "id": "blog_enabled",
+      "group": "content",
       "label": "Blog/News Enabled",
+      "help": "Enables posts, listing, authors; migration may add work.",
       "type": "select",
       "options": [
         { "value": "no", "label": "No" },
@@ -366,15 +477,21 @@
     },
     {
       "id": "posts_to_migrate",
+      "group": "content",
       "label": "Legacy Posts to Migrate",
+      "help": "Only if blog is enabled.",
       "type": "number",
-      "min": 0, "max": 5000, "default": 0,
+      "min": 0,
+      "max": 5000,
+      "default": 0,
       "visibleWhen": [{ "id": "blog_enabled", "equals": "yes" }],
       "hoursPerBatch": { "batchSize": 20, "content": 3, "backend": 1, "qa": 1 }
     },
     {
       "id": "translation_method",
+      "group": "content",
       "label": "Translation Method",
+      "help": "Client-provided, human agency, or AI post-edit.",
       "type": "select",
       "options": [
         { "value": "client_provided", "label": "Client-provided", "multiplier.content": 1 },
@@ -385,7 +502,9 @@
     },
     {
       "id": "rtl_support",
+      "group": "content",
       "label": "RTL Support",
+      "help": "Right-to-left UI adjustments and QA.",
       "type": "select",
       "options": [
         { "value": "no", "label": "No" },
@@ -396,7 +515,9 @@
 
     {
       "id": "forms_simple",
+      "group": "forms_crm",
       "label": "Simple Forms (contact/newsletter)",
+      "help": "Basic validation & delivery.",
       "type": "select",
       "options": [
         { "value": "no", "label": "No" },
@@ -406,14 +527,20 @@
     },
     {
       "id": "forms_complex",
+      "group": "forms_crm",
       "label": "Complex/Multi-step Forms",
+      "help": "Each complex form adds BE/FE/QA.",
       "type": "number",
-      "min": 0, "max": 20, "default": 0,
+      "min": 0,
+      "max": 20,
+      "default": 0,
       "hoursPerUnit": { "frontend": 6, "backend": 8, "qa": 2 }
     },
     {
       "id": "captcha",
+      "group": "forms_crm",
       "label": "Bot Protection (reCAPTCHA/hCaptcha)",
+      "help": "Helps reduce spam; small integration.",
       "type": "select",
       "options": [
         { "value": "no", "label": "No" },
@@ -423,7 +550,9 @@
     },
     {
       "id": "crm_automation",
+      "group": "forms_crm",
       "label": "CRM Automation (workflows)",
+      "help": "Field mapping, triggers, nurture sequences.",
       "type": "select",
       "options": [
         { "value": "no", "label": "No" },
@@ -434,7 +563,9 @@
 
     {
       "id": "analytics_depth",
+      "group": "analytics_privacy",
       "label": "Analytics Depth",
+      "help": "From basic GA4 to GTM event matrix & QA.",
       "type": "select",
       "options": [
         { "value": "basic_ga4", "label": "Basic GA4", "hours.backend": 2, "hours.frontend": 2 },
@@ -445,7 +576,9 @@
     },
     {
       "id": "consent_banner",
+      "group": "analytics_privacy",
       "label": "Cookie/Consent Banner (GDPR)",
+      "help": "CMP hookup, preferences storage, and testing.",
       "type": "select",
       "options": [
         { "value": "no", "label": "No" },
@@ -455,7 +588,9 @@
     },
     {
       "id": "legal_pages",
+      "group": "analytics_privacy",
       "label": "Legal Pages",
+      "help": "Basic templates and content entry.",
       "type": "multiselect",
       "options": [
         { "value": "privacy", "label": "Privacy Policy", "hours.content": 1, "hours.frontend": 0.5, "hours.qa": 0.3 },
@@ -467,7 +602,9 @@
     },
     {
       "id": "pii_minimization",
+      "group": "analytics_privacy",
       "label": "PII Minimization Review",
+      "help": "Light privacy review for forms and data flows.",
       "type": "select",
       "options": [
         { "value": "no", "label": "No" },
@@ -478,7 +615,9 @@
 
     {
       "id": "uptime_sla",
+      "group": "ops",
       "label": "Uptime/SLA Target",
+      "help": "Higher SLAs add failover/monitoring complexity.",
       "type": "select",
       "options": [
         { "value": "best_effort", "label": "Best effort" },
@@ -489,7 +628,9 @@
     },
     {
       "id": "monitoring",
+      "group": "ops",
       "label": "Monitoring/Alerts",
+      "help": "Uptime, logs, error tracking tiers.",
       "type": "select",
       "options": [
         { "value": "light", "label": "Light", "hours.devops": 2 },
@@ -500,7 +641,9 @@
     },
     {
       "id": "backups",
+      "group": "ops",
       "label": "Backups & Retention",
+      "help": "Frequency, retention, and restore testing.",
       "type": "select",
       "options": [
         { "value": "light", "label": "Light", "hours.devops": 2 },
@@ -511,7 +654,9 @@
     },
     {
       "id": "cdn_cache",
+      "group": "ops",
       "label": "CDN & Caching Strategy",
+      "help": "Custom rules require tuning and testing.",
       "type": "select",
       "options": [
         { "value": "default", "label": "Defaults" },
@@ -523,7 +668,9 @@
 
     {
       "id": "collaboration",
+      "group": "delivery",
       "label": "Collaboration Model",
+      "help": "Multi-stakeholder projects increase PM overhead.",
       "type": "select",
       "options": [
         { "value": "solo", "label": "Solo", "multiplier.pm": 0.9 },
@@ -534,14 +681,20 @@
     },
     {
       "id": "trainings",
+      "group": "delivery",
       "label": "Training Sessions (count)",
+      "help": "Per 60–90 min session incl. prep & recording.",
       "type": "number",
-      "min": 0, "max": 20, "default": 1,
+      "min": 0,
+      "max": 20,
+      "default": 1,
       "hoursPerUnit": { "pm": 1.5 }
     },
     {
       "id": "maintenance_retainer",
+      "group": "delivery",
       "label": "Maintenance Retainer",
+      "help": "Ongoing monthly % shown separately (not in build total).",
       "type": "select",
       "options": [
         { "value": "no", "label": "No" },
@@ -552,29 +705,39 @@
 
     {
       "id": "stack_framework",
+      "group": "dev",
       "label": "Frontend Framework",
+      "help": "Baseline stack; 'Other' covers frameworks not listed.",
       "type": "select",
       "options": [
+        { "value": "none", "label": "None (static site)", "hours.frontend": 0, "hours.devops": 1 },
         { "value": "next", "label": "Next.js", "hours.devops": 2 },
         { "value": "react_spa", "label": "React SPA", "hours.frontend": 8, "hours.backend": 4, "hours.devops": 4 },
-        { "value": "wordpress_theme", "label": "WordPress Theme", "hours.backend": 8, "hours.devops": 2 }
+        { "value": "wordpress_theme", "label": "WordPress Theme", "hours.backend": 8, "hours.devops": 2 },
+        { "value": "other", "label": "Other", "hours.frontend": 4, "hours.devops": 2 }
       ],
       "default": "next"
     },
     {
       "id": "api_style",
+      "group": "dev",
       "label": "API Style",
+      "help": "If 'None', no API layer; 'Other' covers custom architectures.",
       "type": "select",
       "options": [
+        { "value": "none", "label": "None (static)", "hours.backend": 0, "hours.devops": 0 },
         { "value": "rest", "label": "REST" },
         { "value": "graphql", "label": "GraphQL", "hours.backend": 8, "hours.devops": 2 },
-        { "value": "mixed", "label": "Mixed", "hours.backend": 10, "hours.devops": 3 }
+        { "value": "mixed", "label": "Mixed", "hours.backend": 10, "hours.devops": 3 },
+        { "value": "other", "label": "Other", "hours.backend": 6, "hours.devops": 2 }
       ],
       "default": "rest"
     },
     {
       "id": "test_coverage",
+      "group": "dev",
       "label": "Test Coverage Goal",
+      "help": "From smoke tests to broader E2E/unit coverage.",
       "type": "select",
       "options": [
         { "value": "smoke", "label": "Smoke tests", "hours.qa": 6 },
@@ -585,7 +748,9 @@
     },
     {
       "id": "ci_cd",
+      "group": "dev",
       "label": "CI/CD Complexity",
+      "help": "Pipelines, previews, checks, environments.",
       "type": "select",
       "options": [
         { "value": "light", "label": "Light", "hours.devops": 4 },
@@ -621,5 +786,117 @@
     "3rd-party subscription costs (CMS, search, WAF, etc.).",
     "Ongoing SEO link-building and PR.",
     "Custom native mobile apps."
+  ],
+
+  "presets": [
+    {
+      "id": "offerte_simple_website",
+      "label": "Simple Website (template, no extras)",
+      "country": "NL",
+      "meta": { "source": "offerte.nl", "oneTimeEUR": "€200–€1,000", "monthlyEUR": "€10–€20" },
+      "values": {
+        "project_type": "brochure",
+        "brand_design": "light",
+        "pages_unique": 3,
+        "pages_reused_count": 5,
+        "cms_choice": "wordpress",
+        "i18n_locales": 1,
+        "integrations": [],
+        "analytics_depth": "basic_ga4",
+        "consent_banner": "yes",
+        "seo_package": "tech_onpage",
+        "content_state": "ready",
+        "animations": "minimal",
+        "performance_target": "basic",
+        "accessibility": "aa_partial",
+        "hosting_stack": "vercel_static",
+        "testing_scope": [],
+        "handover_docs": "readme",
+        "risk_level": "low",
+        "timeline_pressure": "normal"
+      }
+    },
+    {
+      "id": "offerte_good_website",
+      "label": "Good Website (extended template, no extras)",
+      "country": "NL",
+      "meta": { "source": "offerte.nl", "oneTimeEUR": "€1,000–€2,000", "monthlyEUR": "€20–€50" },
+      "values": {
+        "project_type": "brochure",
+        "brand_design": "light",
+        "pages_unique": 6,
+        "pages_reused_count": 15,
+        "cms_choice": "wordpress",
+        "i18n_locales": 1,
+        "integrations": [],
+        "analytics_depth": "ga4_events",
+        "consent_banner": "yes",
+        "seo_package": "tech_keyword",
+        "content_state": "partial",
+        "animations": "moderate",
+        "performance_target": "good",
+        "accessibility": "aa_partial",
+        "hosting_stack": "vercel_static",
+        "testing_scope": ["devices"],
+        "handover_docs": "readme",
+        "risk_level": "medium",
+        "timeline_pressure": "normal"
+      }
+    },
+    {
+      "id": "offerte_professional_website",
+      "label": "Professional Website (unique design + extras)",
+      "country": "NL",
+      "meta": { "source": "offerte.nl", "oneTimeEUR": "€2,000–€5,000", "monthlyEUR": "€50–€200" },
+      "values": {
+        "project_type": "brochure",
+        "brand_design": "full",
+        "pages_unique": 10,
+        "pages_reused_count": 25,
+        "cms_choice": "sanity",
+        "i18n_locales": 1,
+        "integrations": ["analytics", "emailing", "search"],
+        "analytics_depth": "ga4_events",
+        "consent_banner": "yes",
+        "seo_package": "tech_keyword",
+        "content_state": "partial",
+        "animations": "moderate",
+        "performance_target": "good",
+        "accessibility": "aa_full",
+        "hosting_stack": "vercel_static",
+        "testing_scope": ["browsers", "devices"],
+        "handover_docs": "readme",
+        "risk_level": "medium",
+        "timeline_pressure": "normal"
+      }
+    },
+    {
+      "id": "offerte_custom_website",
+      "label": "Custom-built Website (fully unique + extras)",
+      "country": "NL",
+      "meta": { "source": "offerte.nl", "oneTimeEUR": "€10,000–€50,000", "monthlyEUR": "€100–€300" },
+      "values": {
+        "project_type": "brochure",
+        "brand_design": "full",
+        "pages_unique": 15,
+        "pages_reused_count": 40,
+        "cms_choice": "sanity",
+        "i18n_locales": 2,
+        "integrations": ["analytics", "emailing", "payments", "search"],
+        "analytics_depth": "ga4_gtm_matrix",
+        "consent_banner": "yes",
+        "seo_package": "full",
+        "content_state": "copy_needed",
+        "animations": "complex",
+        "performance_target": "excellent",
+        "accessibility": "aa_full",
+        "hosting_stack": "node_server",
+        "testing_scope": ["browsers", "devices", "automation"],
+        "handover_docs": "playbook",
+        "security_hardening": "enhanced",
+        "risk_level": "high",
+        "timeline_pressure": "normal"
+      }
+    }
   ]
 }
