@@ -1,0 +1,56 @@
+{
+    "countries": [
+      {
+        "code": "NL",
+        "name": "Netherlands",
+        "currency": "EUR",
+        "baseRates": {
+          "design": 25,
+          "frontend": 30,
+          "backend": 35,
+          "fullstack": 25,
+          "pm": 20,
+          "qa": 15,
+          "seo": 25,
+          "devops": 30,
+          "content": 20
+        },
+        "tax": { "vatIncluded": false, "vatPercent": 21 }
+      },
+      {
+        "code": "FR",
+        "name": "France",
+        "currency": "EUR",
+        "baseRates": {
+          "design": 70,
+          "frontend": 80,
+          "backend": 90,
+          "fullstack": 85,
+          "pm": 75,
+          "qa": 55,
+          "seo": 65,
+          "devops": 90,
+          "content": 50
+        },
+        "tax": { "vatIncluded": false, "vatPercent": 20 }
+      },
+      {
+        "code": "US",
+        "name": "United States",
+        "currency": "USD",
+        "baseRates": {
+          "design": 110,
+          "frontend": 125,
+          "backend": 140,
+          "fullstack": 130,
+          "pm": 120,
+          "qa": 85,
+          "seo": 100,
+          "devops": 145,
+          "content": 80
+        },
+        "tax": { "vatIncluded": false, "vatPercent": 0 }
+      }
+    ]
+  }
+  
