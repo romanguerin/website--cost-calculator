@@ -59,4 +59,10 @@ export default async function RootLayout(
       <body className="min-h-screen antialiased">{children}</body>
     </html>
   );
+  
 }
+
+export function generateStaticParams() {
+  return [{ lang: 'en' }, { lang: 'fr' }, { lang: 'nl' }];
+}
+
