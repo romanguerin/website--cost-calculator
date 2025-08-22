@@ -1,4 +1,6 @@
 // app/[lang]/layout.tsx
+export const runtime = 'edge';
+
 import "./../globals.css";            // ✅ make sure this path matches your setup
 import type { Metadata } from "next";
 import seo from "@/config/seo.json";

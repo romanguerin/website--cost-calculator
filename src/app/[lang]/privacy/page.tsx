@@ -1,4 +1,6 @@
 // app/[lang]/privacy/page.tsx
+export const runtime = 'edge';
+
 import type { Metadata } from "next";
 import { DEFAULT_LANG, isLang, type Lang } from "@/lib/i18n";
 import seo from "@/config/seo.json";

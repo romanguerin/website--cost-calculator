@@ -1,5 +1,7 @@
 "use client";
 
+export const runtime = 'edge';
+
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { isLang, type Lang, getAssumptions, getExclusions, tRateHelp, tGroup, tLever, tOptionLabel, tPresetLabel } from '@/lib/i18n';
