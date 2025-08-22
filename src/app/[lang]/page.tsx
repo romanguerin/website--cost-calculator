@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { isLang, type Lang } from "@/lib/i18n";
+
 import stringsJson from "@/config/strings.json";
 import factorsJson from "@/config/factors.json";
 import countriesJson from "@/config/countries.json";
@@ -17,17 +20,12 @@ import {
 
 type Cfg = typeof factorsJson & typeof countriesJson;
 type Role = "design" | "frontend" | "backend" | "pm" | "qa" | "devops" | "seo" | "content";
-const BUILD_ROLES: Role[] = ["design", "frontend", "backend", "devops", "seo", "content"];
 const SIMPLE_PRESET_ID = "offerte_simple_website";
 
-type Lang = "en" | "nl";
 const STR: Record<Lang, Record<string, string>> = stringsJson as any;
 
 // Short explanations shown beside each rate (help '?')
-// Remove the old RATE_HELP constant entirely and use this tiny fallback:
 const DEFAULT_RATE_HELP: Record<Role, string> = factorsJson.rateHelp as any;
-
-
 
 /* ---------- theme hook (system default) ---------- */
 
@@ -92,11 +90,19 @@ function cx(...classes: Array<string | false | null | undefined>) {
 /* ---------- main ---------- */
 
 export default function Home() {
+  const router = useRouter();
+  const params = useParams<{ lang?: string }>();
+
   // compose config (split files)
   const cfg: Cfg = useMemo(() => ({ ...(factorsJson as any), ...(countriesJson as any) }), []);
 
-  // language & theme (menu)
-  const [lang, setLang] = useState<Lang>("en");
+  // language & theme (menu) — derive from URL, keep in sync with param
+  const initialLang: Lang = isLang(params?.lang || "") ? (params!.lang as Lang) : "en";
+  const [lang, setLang] = useState<Lang>(initialLang);
+  useEffect(() => {
+    if (isLang(params?.lang || "") && params!.lang !== lang) setLang(params!.lang as Lang);
+  }, [params?.lang]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const [theme, setTheme, isDark] = useThemeDefault();
   const T = STR[lang];
 
@@ -175,14 +181,19 @@ export default function Home() {
             <span className="font-medium">CostCalc</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
-          <SelectFancy
+            <SelectFancy
               ariaLabel={T.language}
               value={lang}
-              onChange={(v) => setLang(v as Lang)}
+              onChange={(v) => {
+                const next = (v as Lang);
+                setLang(next);
+                // stay on the same page and just switch locale prefix
+                router.replace(`/${next}`);
+              }}
               options={[
                 { value: "en", label: "EN" },
                 { value: "nl", label: "NL" },
-                { value: "fr", label: "FR" }   // ← new
+                { value: "fr", label: "FR" }
               ]}
               isDark={isDark}
               widthClass="w-[72px]"
@@ -657,7 +668,6 @@ function RateHelp({ text, isDark }: { text: string; isDark: boolean }) {
     </div>
   );
 }
-
 
 function Popover({ title, text, onClose, isDark }: { title: string; text: string; onClose: () => void; isDark: boolean }) {
   return (

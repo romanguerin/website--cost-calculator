@@ -1,0 +1,45 @@
+{
+  "brand": "CodeCost.io",
+  "siteUrl": "https://codecost.io",
+  "locales": {
+    "en": {
+      "path": "/en",
+      "title": "CodeCost.io — Website Cost Calculator for Developers & Clients",
+      "description": "Get instant project quotes with clear role breakdowns and realistic budgets.",
+      "h1": "Website Cost Calculator for Developers & Clients",
+      "h2": "Get instant project quotes with clear breakdowns by role, scope, and risk.",
+      "h3": "Transparent estimates for brochure sites, e-commerce, and custom web apps.",
+      "ogTitle": "CodeCost.io — Website Cost Calculator",
+      "ogDescription": "Transparent estimates with role breakdowns and P50/P80 ranges.",
+      "twitterTitle": "CodeCost.io — Website Cost Calculator",
+      "twitterDescription": "Instant quotes with clear role breakdowns and realistic budgets.",
+      "ogImage": "/og-image-en.png"
+    },
+    "fr": {
+      "path": "/fr",
+      "title": "CodeCost.io — Calculateur de coûts web pour développeurs et clients",
+      "description": "Devis instantanés avec une répartition claire des rôles et des budgets réalistes.",
+      "h1": "Calculateur de coûts web pour développeurs et clients",
+      "h2": "Obtenez des devis instantanés avec une répartition claire par rôle, périmètre et risques.",
+      "h3": "Estimations transparentes pour sites vitrines, e-commerce et applications sur mesure.",
+      "ogTitle": "CodeCost.io — Calculateur de coûts web",
+      "ogDescription": "Estimations transparentes avec P50/P80.",
+      "twitterTitle": "CodeCost.io — Calculateur de coûts web",
+      "twitterDescription": "Devis instantanés et budgets réalistes.",
+      "ogImage": "/og-image-fr.png"
+    },
+    "nl": {
+      "path": "/nl",
+      "title": "CodeCost.io — Website kosten calculator voor ontwikkelaars en klanten",
+      "description": "Directe offertes met duidelijke rolverdeling en realistische budgetten.",
+      "h1": "Website kosten calculator voor ontwikkelaars en klanten",
+      "h2": "Ontvang direct offertes met duidelijke rolverdeling, scope en risico’s.",
+      "h3": "Transparante schattingen voor brochuresites, webshops en maatwerk webapps.",
+      "ogTitle": "CodeCost.io — Website kosten calculator",
+      "ogDescription": "Transparante schattingen met P50/P80-bandbreedtes.",
+      "twitterTitle": "CodeCost.io — Website kosten calculator",
+      "twitterDescription": "Directe offertes met realistische budgetten.",
+      "ogImage": "/og-image-nl.png"
+    }
+  }
+}
