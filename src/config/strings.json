@@ -1,7 +1,7 @@
 {
   "en": {
     "title": "Website Cost Calculator",
-    "subtitle": "Country rates, fast inputs, and clear P50/P80.",
+    "subtitle": "Clear cost overview for developer and client,",
     "country": "Country",
     "editRates": "Edit rates",
     "preset": "Preset",
@@ -30,7 +30,7 @@
   },
   "nl": {
     "title": "Website Kosten Calculator",
-    "subtitle": "Landtarieven, snelle invoer en duidelijke P50/P80.",
+    "subtitle": "Duidelijk kostenoverzicht voor ontwikkelaar en opdrachtgever",
     "country": "Land",
     "editRates": "Tarieven bewerken",
     "preset": "Preset",
@@ -59,7 +59,7 @@
   },
   "fr": {
     "title": "Calculateur de coût de site web",
-    "subtitle": "Tarifs par pays, saisie rapide et P50/P80 clairs.",
+    "subtitle": "Aperçu clair des coûts pour le développeur et le client.",
     "country": "Pays",
     "editRates": "Modifier les tarifs",
     "preset": "Préréglage",

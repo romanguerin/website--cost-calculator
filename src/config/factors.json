@@ -1,422 +1,324 @@
 {
-  "version": "1.0.4",
-
-
-
-
+  "version": "1.0.5",
   "ui": {
     "groups": [
-      { "id": "basics", "label": "Basics", "help": "High-level choices that drive most of the estimate." },
-      { "id": "pages_content", "label": "Pages & Content", "help": "Templates, content instances, languages, and copy ownership." },
-      { "id": "platform", "label": "Platform & CMS", "help": "Primary platform, builders and typical integrations." },
-      { "id": "experience", "label": "Design & Experience", "help": "Design source, branding, animations and social." },
-      { "id": "quality", "label": "Quality & Performance", "help": "Performance targets, accessibility, testing and security." },
-      { "id": "ops", "label": "Ops, Risk & Handover", "help": "Timeline pressure, risk and documentation." }
+      { "id": "basics" },
+      { "id": "pages_content" },
+      { "id": "platform" },
+      { "id": "experience" },
+      { "id": "quality" },
+      { "id": "ops" }
     ]
   },
-
   "globalOverheads": {
     "pmPercentOfBuild": 0.12,
     "qaPercentOfBuild": 0.08,
     "contingencyRiskBands": { "low": 0.05, "medium": 0.12, "high": 0.22 },
     "maintenance": { "warrantyWeeks": 4, "retainerMonthlyPercent": 0.08 }
   },
-
-  "rateHelp": {
-    "design":   "UI/UX design tasks: wireframes, adapting a theme, component specs.",
-    "frontend": "React/Next.js or builder configuration, styling, interactions. Includes template assembly.",
-    "backend":  "CMS setup, schemas, data & API glue, webhooks. WordPress config vs. headless/custom varies.",
-    "pm":       "Planning, communication, sprint coordination, issue triage. Often 10–15% of build; these are extra PM hours if you add any.",
-    "qa":       "Manual passes, device checks, bug triage. Overhead adds more; this field is for extra QA scope.",
-    "devops":   "Hosting, DNS, CI/CD, environments, backups, security hardening. Managed WP is low; custom servers are higher.",
-    "seo":      "Meta, sitemap, redirects, schema, keyword mapping (if selected). For small sites, keep it light (1–4h).",
-    "content":  "Copy creation/edits and content entry/migration. Batch-based hours increase with page count."
-  },
-
   "levers": [
     {
       "id": "project_type",
       "group": "basics",
-      "label": "Project Type",
       "type": "select",
-      "help": "Brochure sites are lighter; E-commerce and Web Apps add data models and flows.",
       "options": [
-        { "value": "brochure", "label": "Brochure / Marketing" },
-        { "value": "ecommerce", "label": "E-commerce" },
-        { "value": "webapp", "label": "Web App / SaaS" }
+        { "value": "brochure" },
+        { "value": "ecommerce" },
+        { "value": "webapp" }
       ],
       "default": "brochure"
     },
-
-
     {
       "id": "design_source",
       "group": "experience",
-      "label": "Design Source",
       "type": "select",
-      "help": "Start from a theme/template, use a provided Figma file or design from scratch. Multipliers affect FE/Design across the build.",
       "options": [
-        { "value": "template_existing", "label": "Existing theme/template", "hours.design": 4, "hours.frontend": 4, "multiplier.design": 0.6, "multiplier.frontend": 0.5 },
-        { "value": "provided_figma", "label": "Provided Figma (pre-designed)", "hours.design": 8, "hours.frontend": 10, "multiplier.design": 0.9, "multiplier.frontend": 1.0 },
-        { "value": "from_scratch", "label": "From scratch (UI kit/system)", "hours.design": 36, "hours.frontend": 12, "multiplier.design": 1.3, "multiplier.frontend": 1.1 },
-        { "value": "other", "label": "Other (specify offline)" }
+        { "value": "template_existing", "hours.design": 4, "hours.frontend": 4, "multiplier.design": 0.6, "multiplier.frontend": 0.5 },
+        { "value": "provided_figma", "hours.design": 8, "hours.frontend": 10, "multiplier.design": 0.9, "multiplier.frontend": 1.0 },
+        { "value": "from_scratch", "hours.design": 36, "hours.frontend": 12, "multiplier.design": 1.3, "multiplier.frontend": 1.1 },
+        { "value": "other" }
       ],
       "default": "template_existing"
     },
-
     {
       "id": "brand_design",
       "group": "experience",
-      "label": "Brand & Visual Design",
       "type": "select",
-      "help": "How much new branding/design system work is in scope.",
       "options": [
-        { "value": "none", "label": "Existing brand (no design)", "hours.design": 0 },
-        { "value": "light", "label": "Light UI polish", "hours.design": 14 },
-        { "value": "full", "label": "Full design system", "hours.design": 50 },
-        { "value": "other", "label": "Other (specify offline)" }
+        { "value": "none", "hours.design": 0 },
+        { "value": "light", "hours.design": 14 },
+        { "value": "full", "hours.design": 50 },
+        { "value": "other" }
       ],
       "default": "light"
     },
-
     {
       "id": "pages_unique",
       "group": "pages_content",
-      "label": "Unique Page Templates",
       "type": "number",
-      "unit": "templates",
-      "help": "Distinct page layouts (Home, About, Listing, Detail). Adds design + FE + QA.",
       "min": 1,
       "max": 50,
       "default": 5,
       "hoursPerUnit": { "design": 2.5, "frontend": 3.5, "qa": 0.7 }
     },
-
     {
       "id": "pages_reused_count",
       "group": "pages_content",
-      "label": "Reusable Pages (content instances)",
       "type": "number",
-      "unit": "pages",
-      "help": "Instances that reuse existing templates (mostly content entry + small QA).",
       "min": 0,
       "max": 2000,
       "default": 10,
       "hoursPerBatch": { "batchSize": 10, "content": 2, "qa": 0.5 }
     },
-
     {
       "id": "content_state",
       "group": "pages_content",
-      "label": "Content Readiness",
       "type": "select",
-      "help": "Who writes and prepares copy. Copywriting adds content hours; partial content needs editing.",
       "options": [
-        { "value": "ready", "label": "All content provided", "multiplier.content": 0.6 },
-        { "value": "partial", "label": "Partial (requires edits)", "multiplier.content": 1 },
-        { "value": "copy_needed", "label": "Copywriting needed", "hours.content": 24 },
-        { "value": "other", "label": "Other (specify offline)" }
+        { "value": "ready", "multiplier.content": 0.6 },
+        { "value": "partial", "multiplier.content": 1 },
+        { "value": "copy_needed", "hours.content": 24 },
+        { "value": "other" }
       ],
       "default": "partial"
     },
-
     {
       "id": "i18n_locales",
       "group": "pages_content",
-      "label": "Languages",
       "type": "number",
-      "help": "Each extra locale adds FE/BE integration, content and QA. Single locale adds nothing.",
       "min": 1,
       "max": 12,
       "default": 1,
       "hoursBase": { "frontend": 0, "backend": 0 },
       "hoursPerExtraLocale": { "frontend": 2, "backend": 2, "content": 4, "qa": 1.5 }
     },
-
     {
       "id": "cms_choice",
       "group": "platform",
-      "label": "Platform / CMS",
       "type": "select",
-      "help": "Hosted builders reduce BE/DevOps but constrain flexibility. WordPress is flexible; headless adds integration work.",
       "options": [
-        { "value": "none", "label": "No CMS (static/SSR)", "multiplier.backend": 0.9 },
-        { "value": "wordpress", "label": "WordPress (classic)", "hours.backend": 8, "hours.frontend": 6, "multiplier.frontend": 0.7 },
-        { "value": "webflow", "label": "Webflow (hosted builder)", "hours.frontend": 12, "hours.backend": 3, "multiplier.frontend": 0.6 },
-        { "value": "wix", "label": "Wix (hosted builder)", "hours.frontend": 10, "hours.backend": 2, "multiplier.frontend": 0.6 },
-        { "value": "squarespace", "label": "Squarespace (hosted builder)", "hours.frontend": 10, "hours.backend": 2, "multiplier.frontend": 0.6 },
-        { "value": "sanity", "label": "Sanity (Headless)", "hours.backend": 24 },
-        { "value": "shopify", "label": "Shopify (Headless optional)", "hours.backend": 26, "hours.frontend": 6 },
-        { "value": "other", "label": "Other (specify offline)" }
+        { "value": "none", "multiplier.backend": 0.9 },
+        { "value": "wordpress", "hours.backend": 8, "hours.frontend": 6, "multiplier.frontend": 0.7 },
+        { "value": "webflow", "hours.frontend": 12, "hours.backend": 3, "multiplier.frontend": 0.6 },
+        { "value": "wix", "hours.frontend": 10, "hours.backend": 2, "multiplier.frontend": 0.6 },
+        { "value": "squarespace", "hours.frontend": 10, "hours.backend": 2, "multiplier.frontend": 0.6 },
+        { "value": "sanity", "hours.backend": 24 },
+        { "value": "shopify", "hours.backend": 26, "hours.frontend": 6 },
+        { "value": "other" }
       ],
       "default": "wordpress"
     },
-
     {
       "id": "wp_page_builder",
       "group": "platform",
-      "label": "WP Page Builder",
       "type": "select",
-      "help": "If WordPress is chosen, which builder? Some increase QA due to generated markup.",
       "visibleWhen": [{ "id": "cms_choice", "equals": "wordpress" }],
       "options": [
-        { "value": "gutenberg", "label": "Gutenberg (native)", "hours.frontend": 4 },
-        { "value": "elementor", "label": "Elementor", "hours.frontend": 8, "hours.qa": 2 },
-        { "value": "divi", "label": "Divi", "hours.frontend": 8, "hours.qa": 2 },
-        { "value": "other", "label": "Other" }
+        { "value": "gutenberg", "hours.frontend": 4 },
+        { "value": "elementor", "hours.frontend": 8, "hours.qa": 2 },
+        { "value": "divi", "hours.frontend": 8, "hours.qa": 2 },
+        { "value": "other" }
       ],
       "default": "gutenberg"
     },
-
     {
       "id": "ecom_depth",
       "group": "platform",
-      "label": "E-commerce Scope",
       "type": "select",
-      "help": "Payments-only is light; full cart/taxes/shipping is mid; variants/promos/subscriptions are heavy.",
       "visibleWhen": [{ "id": "project_type", "equals": "ecommerce" }],
       "options": [
-        { "value": "lite", "label": "Payments only (few SKUs)", "hours.backend": 18, "hours.frontend": 14 },
-        { "value": "standard", "label": "Catalog + cart + taxes + shipping", "hours.backend": 55, "hours.frontend": 40 },
-        { "value": "advanced", "label": "Variants, promos, subscriptions", "hours.backend": 95, "hours.frontend": 70 }
+        { "value": "lite", "hours.backend": 18, "hours.frontend": 14 },
+        { "value": "standard", "hours.backend": 55, "hours.frontend": 40 },
+        { "value": "advanced", "hours.backend": 95, "hours.frontend": 70 }
       ],
       "default": "standard"
     },
-
     {
       "id": "sku_count",
       "group": "platform",
-      "label": "Number of Products",
       "type": "number",
-      "help": "Catalog size affects content entry, imports, and QA. Count distinct sellable items.",
       "min": 0,
       "max": 20000,
       "default": 100,
       "visibleWhen": [{ "id": "project_type", "equals": "ecommerce" }],
       "hoursPerBatch": { "batchSize": 50, "content": 3, "qa": 1 }
     },
-
     {
       "id": "auth",
       "group": "platform",
-      "label": "Authentication & Accounts",
       "type": "select",
-      "help": "Enable sign-in flows. Email+password is basic; OAuth adds providers and policy handling.",
       "options": [
-        { "value": "none", "label": "No auth", "hours.backend": 0, "hours.frontend": 0 },
-        { "value": "email", "label": "Email/password + reset", "hours.backend": 14, "hours.frontend": 10 },
-        { "value": "oauth", "label": "OAuth (Google/Apple/etc.)", "hours.backend": 22, "hours.frontend": 12 },
-        { "value": "other", "label": "Other" }
+        { "value": "none", "hours.backend": 0, "hours.frontend": 0 },
+        { "value": "email", "hours.backend": 14, "hours.frontend": 10 },
+        { "value": "oauth", "hours.backend": 22, "hours.frontend": 12 },
+        { "value": "other" }
       ],
       "default": "none"
     },
-
     {
       "id": "integrations",
       "group": "platform",
-      "label": "3rd-Party Integrations",
       "type": "multiselect",
-      "help": "Typical add-ons: analytics/consent, CRM, email marketing, payments, search, PIM/ERP.",
       "options": [
-        { "value": "analytics", "label": "GA4 + Consent", "hours.backend": 3, "hours.frontend": 4 },
-        { "value": "crm", "label": "CRM (HubSpot/Salesforce)", "hours.backend": 12, "hours.frontend": 4 },
-        { "value": "emailing", "label": "Email (Brevo/Mailchimp)", "hours.backend": 6, "hours.frontend": 3 },
-        { "value": "payments", "label": "Payments (Stripe/etc.)", "hours.backend": 10, "hours.frontend": 6 },
-        { "value": "search", "label": "Site Search (Algolia/Meilisearch)", "hours.backend": 10, "hours.frontend": 6 },
-        { "value": "pim", "label": "PIM/ERP connector", "hours.backend": 24, "hours.frontend": 6 },
-        { "value": "other", "label": "Other" }
+        { "value": "analytics", "hours.backend": 3, "hours.frontend": 4 },
+        { "value": "crm", "hours.backend": 12, "hours.frontend": 4 },
+        { "value": "emailing", "hours.backend": 6, "hours.frontend": 3 },
+        { "value": "payments", "hours.backend": 10, "hours.frontend": 6 },
+        { "value": "search", "hours.backend": 10, "hours.frontend": 6 },
+        { "value": "pim", "hours.backend": 24, "hours.frontend": 6 },
+        { "value": "other" }
       ]
     },
-
     {
       "id": "social_media",
       "group": "experience",
-      "label": "Social Media",
       "type": "multiselect",
-      "help": "Share buttons and basic embeds are light. Live feeds add QA and performance work.",
       "options": [
-        { "value": "share", "label": "Share buttons + meta (OG/Twitter)", "hours.frontend": 2 },
-        { "value": "embeds", "label": "Embeds (Instagram/Twitter/LinkedIn)", "hours.frontend": 4, "hours.qa": 1 },
-        { "value": "feeds", "label": "Live feeds / API widgets", "hours.frontend": 8, "hours.backend": 6, "hours.qa": 2 },
-        { "value": "other", "label": "Other" }
+        { "value": "share", "hours.frontend": 2 },
+        { "value": "embeds", "hours.frontend": 4, "hours.qa": 1 },
+        { "value": "feeds", "hours.frontend": 8, "hours.backend": 6, "hours.qa": 2 },
+        { "value": "other" }
       ]
     },
-
     {
       "id": "performance_target",
       "group": "quality",
-      "label": "Performance Target (Core Web Vitals)",
       "type": "select",
-      "help": "Higher targets add FE optimization and some DevOps/CDN work.",
       "options": [
-        { "value": "basic", "label": "Reasonable defaults", "multiplier.frontend": 1, "multiplier.devops": 1 },
-        { "value": "good", "label": "Lighthouse ~85+", "multiplier.frontend": 1.15, "hours.devops": 6 },
-        { "value": "excellent", "label": "Lighthouse 95+ / CWV green", "multiplier.frontend": 1.35, "hours.devops": 12 }
+        { "value": "basic", "multiplier.frontend": 1, "multiplier.devops": 1 },
+        { "value": "good", "multiplier.frontend": 1.15, "hours.devops": 6 },
+        { "value": "excellent", "multiplier.frontend": 1.35, "hours.devops": 12 }
       ],
       "default": "good"
     },
-
     {
       "id": "accessibility",
       "group": "quality",
-      "label": "Accessibility (WCAG)",
       "type": "select",
-      "help": "Compliance level and depth of auditing. Higher levels add QA and remediation.",
       "options": [
-        { "value": "none", "label": "Not in scope", "hours.qa": 0, "hours.frontend": 0 },
-        { "value": "aa_partial", "label": "AA (pragmatic)", "hours.qa": 10, "hours.frontend": 10 },
-        { "value": "aa_full", "label": "AA (full audit + fixes)", "hours.qa": 28, "hours.frontend": 24 },
-        { "value": "aaa", "label": "AAA (targeted areas)", "hours.qa": 36, "hours.frontend": 30 }
+        { "value": "none", "hours.qa": 0, "hours.frontend": 0 },
+        { "value": "aa_partial", "hours.qa": 10, "hours.frontend": 10 },
+        { "value": "aa_full", "hours.qa": 28, "hours.frontend": 24 },
+        { "value": "aaa", "hours.qa": 36, "hours.frontend": 30 }
       ],
       "default": "aa_partial"
     },
-
     {
       "id": "animations",
       "group": "experience",
-      "label": "Animations & Interactions",
       "type": "select",
-      "help": "From simple transitions to rich micro-interactions. Heavier animation adds FE and QA time.",
       "options": [
-        { "value": "minimal", "label": "Basic transitions", "hours.frontend": 4 },
-        { "value": "moderate", "label": "Hero + section reveals", "hours.frontend": 16 },
-        { "value": "complex", "label": "Rich micro-interactions / 3D", "hours.frontend": 36 }
+        { "value": "minimal", "hours.frontend": 4 },
+        { "value": "moderate", "hours.frontend": 16 },
+        { "value": "complex", "hours.frontend": 36 }
       ],
       "default": "moderate"
     },
-
     {
       "id": "seo_package",
       "group": "experience",
-      "label": "SEO",
       "type": "select",
-      "help": "Technical setup and on-page basics are standard. Keyword mapping and full content plans add more SEO hours.",
       "options": [
-        { "value": "basic_meta", "label": "Basic meta + sitemap", "hours.seo": 2 },
-        { "value": "tech_onpage", "label": "Technical + on-page setup", "hours.seo": 10 },
-        { "value": "tech_keyword", "label": "Technical + keyword mapping", "hours.seo": 28 },
-        { "value": "full", "label": "Full SEO incl. content plan", "hours.seo": 48 },
-        { "value": "other", "label": "Other" }
+        { "value": "basic_meta", "hours.seo": 2 },
+        { "value": "tech_onpage", "hours.seo": 10 },
+        { "value": "tech_keyword", "hours.seo": 28 },
+        { "value": "full", "hours.seo": 48 },
+        { "value": "other" }
       ],
       "default": "tech_onpage"
     },
-
     {
       "id": "security_hardening",
       "group": "quality",
-      "label": "Security & Compliance",
       "type": "select",
-      "help": "From best practices to WAF/rate limiting and scheduled scans.",
       "options": [
-        { "value": "minimal", "label": "Basics (managed host)", "hours.devops": 2 },
-        { "value": "standard", "label": "Best practices", "hours.devops": 6 },
-        { "value": "enhanced", "label": "WAF, rate-limit, scans", "hours.devops": 16 }
+        { "value": "minimal", "hours.devops": 2 },
+        { "value": "standard", "hours.devops": 6 },
+        { "value": "enhanced", "hours.devops": 16 }
       ],
       "default": "standard"
     },
-
     {
       "id": "hosting_stack",
       "group": "platform",
-      "label": "Hosting / Stack",
       "type": "select",
-      "help": "Server/infra choice affects DevOps time. Hosted builders include hosting (this option is hidden for them).",
       "options": [
-        { "value": "managed_wp", "label": "Managed WordPress hosting", "hours.devops": 2 },
-        { "value": "vercel_static", "label": "Static/SSR on Vercel", "hours.devops": 6 },
-        { "value": "node_server", "label": "Node server (Docker)", "hours.devops": 14 },
-        { "value": "kubernetes", "label": "K8s/Autoscale", "hours.devops": 28 },
-        { "value": "other", "label": "Other" }
+        { "value": "managed_wp", "hours.devops": 2 },
+        { "value": "vercel_static", "hours.devops": 6 },
+        { "value": "node_server", "hours.devops": 14 },
+        { "value": "kubernetes", "hours.devops": 28 },
+        { "value": "other" }
       ],
       "default": "vercel_static"
     },
-
     {
       "id": "migration",
       "group": "pages_content",
-      "label": "Content Migration",
       "type": "select",
-      "help": "Legacy imports can be manual or scripted. Hosted builders may limit automation.",
       "options": [
-        { "value": "none", "label": "No legacy content", "hours.content": 0 },
-        { "value": "semi_auto", "label": "Semi-automated import", "hours.content": 16, "hours.backend": 8 },
-        { "value": "manual", "label": "Manual migration", "hours.content": 32 },
-        { "value": "other", "label": "Other" }
+        { "value": "none", "hours.content": 0 },
+        { "value": "semi_auto", "hours.content": 16, "hours.backend": 8 },
+        { "value": "manual", "hours.content": 32 },
+        { "value": "other" }
       ],
       "default": "none"
     },
-
     {
       "id": "testing_scope",
       "group": "quality",
-      "label": "Testing Scope",
       "type": "multiselect",
-      "help": "Define how broadly to test (browsers/devices) and whether to add basic automation.",
       "options": [
-        { "value": "browsers", "label": "Cross-browser matrix", "hours.qa": 10 },
-        { "value": "devices", "label": "Responsive device set", "hours.qa": 8 },
-        { "value": "automation", "label": "Basic E2E automation", "hours.qa": 18, "hours.devops": 6 },
-        { "value": "other", "label": "Other" }
+        { "value": "browsers", "hours.qa": 10 },
+        { "value": "devices", "hours.qa": 8 },
+        { "value": "automation", "hours.qa": 18, "hours.devops": 6 },
+        { "value": "other" }
       ]
     },
-
     {
       "id": "handover_docs",
       "group": "ops",
-      "label": "Handover & Docs",
       "type": "select",
-      "help": "From README + short Looms to an ops playbook and live training.",
       "options": [
-        { "value": "readme", "label": "README + Looms", "hours.pm": 3 },
-        { "value": "playbook", "label": "Ops playbook + training", "hours.pm": 16 },
-        { "value": "other", "label": "Other" }
+        { "value": "readme", "hours.pm": 3 },
+        { "value": "playbook", "hours.pm": 16 },
+        { "value": "other" }
       ],
       "default": "readme"
     },
-
     {
       "id": "risk_level",
       "group": "ops",
-      "label": "Risk Level",
       "type": "select",
-      "help": "Higher risk increases the contingency used for P80. P50 remains unchanged.",
       "options": [
-        { "value": "low", "label": "Low" },
-        { "value": "medium", "label": "Medium" },
-        { "value": "high", "label": "High" }
+        { "value": "low" },
+        { "value": "medium" },
+        { "value": "high" }
       ],
       "default": "medium"
     },
-
     {
       "id": "timeline_pressure",
       "group": "ops",
-      "label": "Timeline Pressure",
       "type": "select",
-      "help": "Rush multiplies hours to account for parallelization and extra coordination.",
       "options": [
-        { "value": "normal", "label": "Normal" },
-        { "value": "rush10", "label": "Rush (+10%)", "multiplier.all": 1.1 },
-        { "value": "rush20", "label": "Rush (+20%)", "multiplier.all": 1.2 }
+        { "value": "normal" },
+        { "value": "rush10", "multiplier.all": 1.1 },
+        { "value": "rush20", "multiplier.all": 1.2 }
       ],
       "default": "normal"
     }
   ],
-
   "dependencies": [
-    { "if": { "id": "cms_choice", "equals": "none" }, "then": { "adjust": [{ "id": "migration", "set": "none" }]}},
-    { "if": { "id": "cms_choice", "equals": "wordpress" }, "then": { "show": ["wp_page_builder"] }},
-    { "if": { "id": "cms_choice", "equals": "webflow" }, "then": { "hide": ["hosting_stack", "wp_page_builder"] }},
-    { "if": { "id": "cms_choice", "equals": "wix" }, "then": { "hide": ["hosting_stack", "wp_page_builder"] }},
-    { "if": { "id": "cms_choice", "equals": "squarespace" }, "then": { "hide": ["hosting_stack", "wp_page_builder"] }},
-    { "if": { "id": "cms_choice", "equals": "shopify" }, "then": { "hide": ["wp_page_builder"] }}
+    { "if": { "id": "cms_choice", "equals": "none" }, "then": { "adjust": [{ "id": "migration", "set": "none" }] } },
+    { "if": { "id": "cms_choice", "equals": "wordpress" }, "then": { "show": ["wp_page_builder"] } },
+    { "if": { "id": "cms_choice", "equals": "webflow" }, "then": { "hide": ["hosting_stack", "wp_page_builder"] } },
+    { "if": { "id": "cms_choice", "equals": "wix" }, "then": { "hide": ["hosting_stack", "wp_page_builder"] } },
+    { "if": { "id": "cms_choice", "equals": "squarespace" }, "then": { "hide": ["hosting_stack", "wp_page_builder"] } },
+    { "if": { "id": "cms_choice", "equals": "shopify" }, "then": { "hide": ["wp_page_builder"] } }
   ],
-
   "presets": [
     {
       "id": "offerte_simple_website",
-      "label": "Simple Website",
-      "country": "NL",
       "meta": { "order": 0, "targetP50Range": [1000, 1000] },
       "values": {
         "project_type": "brochure",
@@ -445,8 +347,6 @@
     },
     {
       "id": "preset_good",
-      "label": "Good Website",
-      "country": "NL",
       "meta": { "order": 1, "targetP50Range": [1000, 2000] },
       "values": {
         "project_type": "brochure",
@@ -475,8 +375,6 @@
     },
     {
       "id": "preset_professional",
-      "label": "Professional Website",
-      "country": "NL",
       "meta": { "order": 2, "targetP50Range": [2000, 5000] },
       "values": {
         "project_type": "brochure",
@@ -505,8 +403,6 @@
     },
     {
       "id": "preset_custom",
-      "label": "Custom-made Website",
-      "country": "NL",
       "meta": { "order": 3, "targetP50Range": [10000, 50000] },
       "values": {
         "project_type": "brochure",
@@ -533,27 +429,10 @@
       }
     }
   ],
-
   "outputConfig": {
     "showBands": ["P50", "P80"],
     "rounding": { "currency": 0, "hours": 1 },
     "includeAssumptions": true,
     "includeExclusions": true
-  },
-
-  "assumptions": [
-    "Client provides brand assets unless 'Brand & Visual Design' is 'full'.",
-    "Content is final unless 'Content Readiness' indicates copywriting or edits.",
-    "One round of revisions per unique template is included.",
-    "No legacy browser support beyond last 2 major versions.",
-    "Hosted builders (Wix/Squarespace/Webflow) include hosting; advanced customizations may be constrained."
-  ],
-
-  "exclusions": [
-    "Stock photography/licensing fees.",
-    "3rd-party subscription costs (CMS, search, WAF, etc.).",
-    "Ongoing SEO link-building and PR.",
-    "Custom native mobile apps.",
-    "Complex data migrations beyond selected scope."
-  ]
+  }
 }

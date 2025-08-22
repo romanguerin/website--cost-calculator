@@ -1,0 +1,823 @@
+{
+    "en": {
+      "ui": {
+        "groups": {
+          "basics": { "label": "Basics", "help": "High-level choices that drive most of the estimate." },
+          "pages_content": { "label": "Pages & Content", "help": "Templates, content instances, languages, and copy ownership." },
+          "platform": { "label": "Platform & CMS", "help": "Primary platform, builders and typical integrations." },
+          "experience": { "label": "Design & Experience", "help": "Design source, branding, animations and social." },
+          "quality": { "label": "Quality & Performance", "help": "Performance targets, accessibility, testing and security." },
+          "ops": { "label": "Ops, Risk & Handover", "help": "Timeline pressure, risk and documentation." }
+        }
+      },
+      "rateHelp": {
+        "design": "UI/UX design tasks: wireframes, adapting a theme, component specs.",
+        "frontend": "React/Next.js or builder configuration, styling, interactions. Includes template assembly.",
+        "backend": "CMS setup, schemas, data & API glue, webhooks. WordPress config vs. headless/custom varies.",
+        "pm": "Planning, communication, sprint coordination, issue triage. Often 10–15% of build; these are extra PM hours if you add any.",
+        "qa": "Manual passes, device checks, bug triage. Overhead adds more; this field is for extra QA scope.",
+        "devops": "Hosting, DNS, CI/CD, environments, backups, security hardening. Managed WP is low; custom servers are higher.",
+        "seo": "Meta, sitemap, redirects, schema, keyword mapping (if selected). For small sites, keep it light (1–4h).",
+        "content": "Copy creation/edits and content entry/migration. Batch-based hours increase with page count."
+      },
+      "levers": {
+        "project_type": {
+          "label": "Project Type",
+          "help": "Brochure sites are lighter; E-commerce and Web Apps add data models and flows.",
+          "options": {
+            "brochure": "Brochure / Marketing",
+            "ecommerce": "E-commerce",
+            "webapp": "Web App / SaaS"
+          }
+        },
+        "design_source": {
+          "label": "Design Source",
+          "help": "Start from a theme/template, use a provided Figma file or design from scratch. Multipliers affect FE/Design across the build.",
+          "options": {
+            "template_existing": "Existing theme/template",
+            "provided_figma": "Provided Figma (pre-designed)",
+            "from_scratch": "From scratch (UI kit/system)",
+            "other": "Other (specify offline)"
+          }
+        },
+        "brand_design": {
+          "label": "Brand & Visual Design",
+          "help": "How much new branding/design system work is in scope.",
+          "options": {
+            "none": "Existing brand (no design)",
+            "light": "Light UI polish",
+            "full": "Full design system",
+            "other": "Other (specify offline)"
+          }
+        },
+        "pages_unique": {
+          "label": "Unique Page Templates",
+          "help": "Distinct page layouts (Home, About, Listing, Detail). Adds design + FE + QA.",
+          "unit": "templates"
+        },
+        "pages_reused_count": {
+          "label": "Reusable Pages (content instances)",
+          "help": "Instances that reuse existing templates (mostly content entry + small QA).",
+          "unit": "pages"
+        },
+        "content_state": {
+          "label": "Content Readiness",
+          "help": "Who writes and prepares copy. Copywriting adds content hours; partial content needs editing.",
+          "options": {
+            "ready": "All content provided",
+            "partial": "Partial (requires edits)",
+            "copy_needed": "Copywriting needed",
+            "other": "Other (specify offline)"
+          }
+        },
+        "i18n_locales": {
+          "label": "Languages",
+          "help": "Each extra locale adds FE/BE integration, content and QA. Single locale adds nothing."
+        },
+        "cms_choice": {
+          "label": "Platform / CMS",
+          "help": "Hosted builders reduce BE/DevOps but constrain flexibility. WordPress is flexible; headless adds integration work.",
+          "options": {
+            "none": "No CMS (static/SSR)",
+            "wordpress": "WordPress (classic)",
+            "webflow": "Webflow (hosted builder)",
+            "wix": "Wix (hosted builder)",
+            "squarespace": "Squarespace (hosted builder)",
+            "sanity": "Sanity (Headless)",
+            "shopify": "Shopify (Headless optional)",
+            "other": "Other (specify offline)"
+          }
+        },
+        "wp_page_builder": {
+          "label": "WP Page Builder",
+          "help": "If WordPress is chosen, which builder? Some increase QA due to generated markup.",
+          "options": {
+            "gutenberg": "Gutenberg (native)",
+            "elementor": "Elementor",
+            "divi": "Divi",
+            "other": "Other"
+          }
+        },
+        "ecom_depth": {
+          "label": "E-commerce Scope",
+          "help": "Payments-only is light; full cart/taxes/shipping is mid; variants/promos/subscriptions are heavy.",
+          "options": {
+            "lite": "Payments only (few SKUs)",
+            "standard": "Catalog + cart + taxes + shipping",
+            "advanced": "Variants, promos, subscriptions"
+          }
+        },
+        "sku_count": {
+          "label": "Number of Products",
+          "help": "Catalog size affects content entry, imports, and QA. Count distinct sellable items."
+        },
+        "auth": {
+          "label": "Authentication & Accounts",
+          "help": "Enable sign-in flows. Email+password is basic; OAuth adds providers and policy handling.",
+          "options": {
+            "none": "No auth",
+            "email": "Email/password + reset",
+            "oauth": "OAuth (Google/Apple/etc.)",
+            "other": "Other"
+          }
+        },
+        "integrations": {
+          "label": "3rd-Party Integrations",
+          "help": "Typical add-ons: analytics/consent, CRM, email marketing, payments, search, PIM/ERP.",
+          "options": {
+            "analytics": "GA4 + Consent",
+            "crm": "CRM (HubSpot/Salesforce)",
+            "emailing": "Email (Brevo/Mailchimp)",
+            "payments": "Payments (Stripe/etc.)",
+            "search": "Site Search (Algolia/Meilisearch)",
+            "pim": "PIM/ERP connector",
+            "other": "Other"
+          }
+        },
+        "social_media": {
+          "label": "Social Media",
+          "help": "Share buttons and basic embeds are light. Live feeds add QA and performance work.",
+          "options": {
+            "share": "Share buttons + meta (OG/Twitter)",
+            "embeds": "Embeds (Instagram/Twitter/LinkedIn)",
+            "feeds": "Live feeds / API widgets",
+            "other": "Other"
+          }
+        },
+        "performance_target": {
+          "label": "Performance Target (Core Web Vitals)",
+          "help": "Higher targets add FE optimization and some DevOps/CDN work.",
+          "options": {
+            "basic": "Reasonable defaults",
+            "good": "Lighthouse ~85+",
+            "excellent": "Lighthouse 95+ / CWV green"
+          }
+        },
+        "accessibility": {
+          "label": "Accessibility (WCAG)",
+          "help": "Compliance level and depth of auditing. Higher levels add QA and remediation.",
+          "options": {
+            "none": "Not in scope",
+            "aa_partial": "AA (pragmatic)",
+            "aa_full": "AA (full audit + fixes)",
+            "aaa": "AAA (targeted areas)"
+          }
+        },
+        "animations": {
+          "label": "Animations & Interactions",
+          "help": "From simple transitions to rich micro-interactions. Heavier animation adds FE and QA time.",
+          "options": {
+            "minimal": "Basic transitions",
+            "moderate": "Hero + section reveals",
+            "complex": "Rich micro-interactions / 3D"
+          }
+        },
+        "seo_package": {
+          "label": "SEO",
+          "help": "Technical setup and on-page basics are standard. Keyword mapping and full content plans add more SEO hours.",
+          "options": {
+            "basic_meta": "Basic meta + sitemap",
+            "tech_onpage": "Technical + on-page setup",
+            "tech_keyword": "Technical + keyword mapping",
+            "full": "Full SEO incl. content plan",
+            "other": "Other"
+          }
+        },
+        "security_hardening": {
+          "label": "Security & Compliance",
+          "help": "From best practices to WAF/rate limiting and scheduled scans.",
+          "options": {
+            "minimal": "Basics (managed host)",
+            "standard": "Best practices",
+            "enhanced": "WAF, rate-limit, scans"
+          }
+        },
+        "hosting_stack": {
+          "label": "Hosting / Stack",
+          "help": "Server/infra choice affects DevOps time. Hosted builders include hosting (this option is hidden for them).",
+          "options": {
+            "managed_wp": "Managed WordPress hosting",
+            "vercel_static": "Static/SSR on Vercel",
+            "node_server": "Node server (Docker)",
+            "kubernetes": "K8s/Autoscale",
+            "other": "Other"
+          }
+        },
+        "migration": {
+          "label": "Content Migration",
+          "help": "Legacy imports can be manual or scripted. Hosted builders may limit automation.",
+          "options": {
+            "none": "No legacy content",
+            "semi_auto": "Semi-automated import",
+            "manual": "Manual migration",
+            "other": "Other"
+          }
+        },
+        "testing_scope": {
+          "label": "Testing Scope",
+          "help": "Define how broadly to test (browsers/devices) and whether to add basic automation.",
+          "options": {
+            "browsers": "Cross-browser matrix",
+            "devices": "Responsive device set",
+            "automation": "Basic E2E automation",
+            "other": "Other"
+          }
+        },
+        "handover_docs": {
+          "label": "Handover & Docs",
+          "help": "From README + short Looms to an ops playbook and live training.",
+          "options": {
+            "readme": "README + Looms",
+            "playbook": "Ops playbook + training",
+            "other": "Other"
+          }
+        },
+        "risk_level": {
+          "label": "Risk Level",
+          "help": "Higher risk increases the contingency used for P80. P50 remains unchanged.",
+          "options": {
+            "low": "Low",
+            "medium": "Medium",
+            "high": "High"
+          }
+        },
+        "timeline_pressure": {
+          "label": "Timeline Pressure",
+          "help": "Rush multiplies hours to account for parallelization and extra coordination.",
+          "options": {
+            "normal": "Normal",
+            "rush10": "Rush (+10%)",
+            "rush20": "Rush (+20%)"
+          }
+        }
+      },
+      "presets": {
+        "offerte_simple_website": "Simple Website",
+        "preset_good": "Good Website",
+        "preset_professional": "Professional Website",
+        "preset_custom": "Custom-made Website"
+      },
+      "assumptions": [
+        "Client provides brand assets unless 'Brand & Visual Design' is 'full'.",
+        "Content is final unless 'Content Readiness' indicates copywriting or edits.",
+        "One round of revisions per unique template is included.",
+        "No legacy browser support beyond last 2 major versions.",
+        "Hosted builders (Wix/Squarespace/Webflow) include hosting; advanced customizations may be constrained."
+      ],
+      "exclusions": [
+        "Stock photography/licensing fees.",
+        "3rd-party subscription costs (CMS, search, WAF, etc.).",
+        "Ongoing SEO link-building and PR.",
+        "Custom native mobile apps.",
+        "Complex data migrations beyond selected scope."
+      ]
+    },
+    "fr": {
+    "ui": {
+      "groups": {
+        "basics": { "label": "Bases", "help": "Choix de haut niveau qui influencent la majorité de l’estimation." },
+        "pages_content": { "label": "Pages & Contenu", "help": "Modèles, instances de contenu, langues et responsabilité des textes." },
+        "platform": { "label": "Plateforme & CMS", "help": "Plateforme principale, constructeurs et intégrations typiques." },
+        "experience": { "label": "Design & Expérience", "help": "Source de design, identité visuelle, animations et réseaux sociaux." },
+        "quality": { "label": "Qualité & Performance", "help": "Objectifs de performance, accessibilité, tests et sécurité." },
+        "ops": { "label": "Ops, Risque & Transfert", "help": "Pression sur le planning, risques et documentation." }
+      }
+    },
+    "rateHelp": {
+      "design": "Tâches UI/UX : wireframes, adaptation de thème, spécifications de composants.",
+      "frontend": "React/Next.js ou configuration de builder, styles, interactions. Inclut l’assemblage de templates.",
+      "backend": "Mise en place CMS, schémas, APIs et webhooks. Config WordPress ou headless/custom selon cas.",
+      "pm": "Planification, communication, coordination de sprints, gestion des tickets. Souvent 10–15 % du build.",
+      "qa": "Tests manuels, vérifications multi-appareils, triage des bugs. Ce champ couvre le QA additionnel.",
+      "devops": "Hébergement, DNS, CI/CD, environnements, sauvegardes, sécurité. Faible pour WP managé, élevé pour serveurs custom.",
+      "seo": "Meta, sitemap, redirections, schéma, mapping de mots‑clés. Pour petits sites, rester léger (1–4 h).",
+      "content": "Rédaction/modification de textes et saisie/migration de contenu. Heures par lots selon le nombre de pages."
+    },
+    "levers": {
+      "project_type": {
+        "label": "Type de projet",
+        "help": "Les sites vitrines sont légers ; l’E‑commerce et les applis web ajoutent des modèles de données et des flux.",
+        "options": {
+          "brochure": "Brochure / Marketing",
+          "ecommerce": "E‑commerce",
+          "webapp": "Application Web / SaaS"
+        }
+      },
+      "design_source": {
+        "label": "Source du design",
+        "help": "Thème/modèle existant, Figma fourni ou design depuis zéro. Les multiplicateurs affectent FE/Design.",
+        "options": {
+          "template_existing": "Thème/modèle existant",
+          "provided_figma": "Figma fourni (pré‑designé)",
+          "from_scratch": "Depuis zéro (UI kit/système)",
+          "other": "Autre (à préciser hors‑ligne)"
+        }
+      },
+      "brand_design": {
+        "label": "Marque & design visuel",
+        "help": "Ampleur du travail de branding/système de design.",
+        "options": {
+          "none": "Marque existante (pas de design)",
+          "light": "Polish UI léger",
+          "full": "Système de design complet",
+          "other": "Autre (à préciser hors‑ligne)"
+        }
+      },
+      "pages_unique": {
+        "label": "Modèles de pages uniques",
+        "help": "Mises en page distinctes (Accueil, À propos, Liste, Détail). Ajoute Design + FE + QA.",
+        "unit": "modèles"
+      },
+      "pages_reused_count": {
+        "label": "Pages réutilisables (instances)",
+        "help": "Instances réutilisant des modèles existants (saisie de contenu + petit QA).",
+        "unit": "pages"
+      },
+      "content_state": {
+        "label": "État du contenu",
+        "help": "Qui rédige et prépare les textes. La rédaction ajoute des heures contenu ; le partiel demande des retouches.",
+        "options": {
+          "ready": "Tout le contenu fourni",
+          "partial": "Partiel (nécessite des retouches)",
+          "copy_needed": "Rédaction nécessaire",
+          "other": "Autre (à préciser hors‑ligne)"
+        }
+      },
+      "i18n_locales": {
+        "label": "Langues",
+        "help": "Chaque langue supplémentaire ajoute intégration FE/BE, contenu et QA. Une seule langue n’ajoute rien."
+      },
+      "cms_choice": {
+        "label": "Plateforme / CMS",
+        "help": "Les builders hébergés réduisent BE/DevOps mais limitent la flexibilité. WordPress est flexible ; le headless ajoute de l’intégration.",
+        "options": {
+          "none": "Aucun CMS (statique/SSR)",
+          "wordpress": "WordPress (classique)",
+          "webflow": "Webflow (builder hébergé)",
+          "wix": "Wix (builder hébergé)",
+          "squarespace": "Squarespace (builder hébergé)",
+          "sanity": "Sanity (Headless)",
+          "shopify": "Shopify (Headless optionnel)",
+          "other": "Autre (à préciser hors‑ligne)"
+        }
+      },
+      "wp_page_builder": {
+        "label": "Constructeur WP",
+        "help": "Si WordPress est choisi, quel builder ? Certains augmentent le QA à cause du markup généré.",
+        "options": {
+          "gutenberg": "Gutenberg (natif)",
+          "elementor": "Elementor",
+          "divi": "Divi",
+          "other": "Autre"
+        }
+      },
+      "ecom_depth": {
+        "label": "Portée e‑commerce",
+        "help": "Paiements seuls = léger ; panier/taxes/livraison = moyen ; variantes/promos/abonnements = lourd.",
+        "options": {
+          "lite": "Paiements uniquement (peu de SKU)",
+          "standard": "Catalogue + panier + taxes + livraison",
+          "advanced": "Variantes, promos, abonnements"
+        }
+      },
+      "sku_count": {
+        "label": "Nombre de produits",
+        "help": "La taille du catalogue impacte la saisie, les imports et le QA. Comptez les articles vendables distincts."
+      },
+      "auth": {
+        "label": "Authentification & comptes",
+        "help": "Active les parcours de connexion. E‑mail+mot de passe est basique ; OAuth ajoute fournisseurs et politiques.",
+        "options": {
+          "none": "Aucune auth",
+          "email": "E‑mail/mot de passe + reset",
+          "oauth": "OAuth (Google/Apple/etc.)",
+          "other": "Autre"
+        }
+      },
+      "integrations": {
+        "label": "Intégrations tierces",
+        "help": "Add‑ons typiques : analytics/consentement, CRM, e‑mailing, paiements, recherche, PIM/ERP.",
+        "options": {
+          "analytics": "GA4 + Consentement",
+          "crm": "CRM (HubSpot/Salesforce)",
+          "emailing": "E‑mailing (Brevo/Mailchimp)",
+          "payments": "Paiements (Stripe/etc.)",
+          "search": "Recherche interne (Algolia/Meilisearch)",
+          "pim": "Connecteur PIM/ERP",
+          "other": "Autre"
+        }
+      },
+      "social_media": {
+        "label": "Réseaux sociaux",
+        "help": "Boutons de partage et embeds basiques sont légers. Les flux live ajoutent du QA et du tuning perf.",
+        "options": {
+          "share": "Boutons de partage + meta (OG/Twitter)",
+          "embeds": "Embeds (Instagram/Twitter/LinkedIn)",
+          "feeds": "Flux live / widgets API",
+          "other": "Autre"
+        }
+      },
+      "performance_target": {
+        "label": "Objectif de performance (CWV)",
+        "help": "Des objectifs plus hauts ajoutent de l’optimisation FE et un peu de DevOps/CDN.",
+        "options": {
+          "basic": "Réglages raisonnables",
+          "good": "Lighthouse ~85+",
+          "excellent": "Lighthouse 95+ / CWV vert"
+        }
+      },
+      "accessibility": {
+        "label": "Accessibilité (WCAG)",
+        "help": "Niveau de conformité et profondeur d’audit. Les niveaux élevés ajoutent QA et remédiation.",
+        "options": {
+          "none": "Hors périmètre",
+          "aa_partial": "AA (pragmatique)",
+          "aa_full": "AA (audit complet + correctifs)",
+          "aaa": "AAA (zones ciblées)"
+        }
+      },
+      "animations": {
+        "label": "Animations & interactions",
+        "help": "Des transitions simples aux micro‑interactions riches. Plus c’est riche, plus FE et QA augmentent.",
+        "options": {
+          "minimal": "Transitions basiques",
+          "moderate": "Hero + révélations de sections",
+          "complex": "Micro‑interactions riches / 3D"
+        }
+      },
+      "seo_package": {
+        "label": "SEO",
+        "help": "La base technique et on‑page est standard. Le mapping de mots‑clés et les plans de contenu ajoutent des heures.",
+        "options": {
+          "basic_meta": "Meta de base + sitemap",
+          "tech_onpage": "Technique + on‑page",
+          "tech_keyword": "Technique + mapping mots‑clés",
+          "full": "SEO complet incl. plan de contenu",
+          "other": "Autre"
+        }
+      },
+      "security_hardening": {
+        "label": "Sécurité & conformité",
+        "help": "Des bonnes pratiques au WAF/limitation de débit et scans programmés.",
+        "options": {
+          "minimal": "Basiques (hébergeur managé)",
+          "standard": "Bonnes pratiques",
+          "enhanced": "WAF, rate‑limit, scans"
+        }
+      },
+      "hosting_stack": {
+        "label": "Hébergement / Stack",
+        "help": "Le choix d’infra impacte le DevOps. Les builders hébergés incluent l’hébergement (option masquée pour eux).",
+        "options": {
+          "managed_wp": "WordPress managé",
+          "vercel_static": "Statique/SSR sur Vercel",
+          "node_server": "Serveur Node (Docker)",
+          "kubernetes": "K8s / Autoscale",
+          "other": "Autre"
+        }
+      },
+      "migration": {
+        "label": "Migration de contenu",
+        "help": "Les imports peuvent être manuels ou scriptés. Les builders hébergés peuvent limiter l’automatisation.",
+        "options": {
+          "none": "Pas de contenu legacy",
+          "semi_auto": "Import semi‑automatisé",
+          "manual": "Migration manuelle",
+          "other": "Autre"
+        }
+      },
+      "testing_scope": {
+        "label": "Périmètre de test",
+        "help": "Définir l’étendue (navigateurs/appareils) et si on ajoute de l’automatisation basique.",
+        "options": {
+          "browsers": "Matrix multi‑navigateurs",
+          "devices": "Jeu d’appareils réactifs",
+          "automation": "E2E basique automatisé",
+          "other": "Autre"
+        }
+      },
+      "handover_docs": {
+        "label": "Transfert & docs",
+        "help": "Du README + Looms courts à un playbook ops et une formation live.",
+        "options": {
+          "readme": "README + Looms",
+          "playbook": "Playbook ops + formation",
+          "other": "Autre"
+        }
+      },
+      "risk_level": {
+        "label": "Niveau de risque",
+        "help": "Un risque plus élevé augmente la contingence utilisée pour le P80. Le P50 ne change pas.",
+        "options": {
+          "low": "Faible",
+          "medium": "Moyen",
+          "high": "Élevé"
+        }
+      },
+      "timeline_pressure": {
+        "label": "Pression planning",
+        "help": "Le rush multiplie les heures pour la parallélisation et la coordination supplémentaire.",
+        "options": {
+          "normal": "Normal",
+          "rush10": "Rush (+10 %)",
+          "rush20": "Rush (+20 %)"
+        }
+      }
+    },
+    "presets": {
+      "offerte_simple_website": "Site simple",
+      "preset_good": "Bon site web",
+      "preset_professional": "Site professionnel",
+      "preset_custom": "Site sur mesure"
+    },
+    "assumptions": [
+      "Le client fournit les éléments de marque sauf si 'Brand & Visual Design' est 'full'.",
+      "Le contenu est final sauf si 'Content Readiness' indique besoin de rédaction ou d’édition.",
+      "Une seule itération de révisions par template unique est incluse.",
+      "Pas de support pour navigateurs obsolètes (au-delà des 2 dernières versions majeures).",
+      "Les builders hébergés (Wix/Squarespace/Webflow) incluent l’hébergement ; les personnalisations avancées peuvent être limitées."
+    ],
+    "exclusions": [
+      "Banques d’images / licences.",
+      "Coûts d’abonnement tiers (CMS, recherche, WAF, etc.).",
+      "SEO continu (netlinking, RP).",
+      "Applications mobiles natives.",
+      "Migrations complexes de données au-delà du périmètre choisi."
+    ]
+  },
+
+  "nl": {
+    "ui": {
+      "groups": {
+        "basics": { "label": "Basis", "help": "Keuzes op hoog niveau die het grootste deel van de schatting bepalen." },
+        "pages_content": { "label": "Pagina’s & Content", "help": "Templates, content‑instanties, talen en teksteigenaarschap." },
+        "platform": { "label": "Platform & CMS", "help": "Hoofdplatform, builders en typische integraties." },
+        "experience": { "label": "Design & Ervaring", "help": "Ontwerpbron, branding, animaties en social." },
+        "quality": { "label": "Kwaliteit & Prestatie", "help": "Prestatiedoelen, toegankelijkheid, testen en beveiliging." },
+        "ops": { "label": "Ops, Risico & Overdracht", "help": "Tijdsdruk, risico’s en documentatie." }
+      }
+    },
+    "rateHelp": {
+      "design": "UI/UX‑taken: wireframes, thema aanpassen, component‑specificaties.",
+      "frontend": "React/Next.js of builder‑configuratie, styling, interacties. Inclusief template‑assemblage.",
+      "backend": "CMS‑setup, schema’s, data‑ & API‑koppelingen, webhooks. WP‑config vs. headless/custom verschilt.",
+      "pm": "Planning, communicatie, sprint‑coördinatie, issue‑beheer. Vaak 10–15% van de build.",
+      "qa": "Handmatige tests, device‑checks, bug‑triage. Dit veld is voor extra QA‑scope.",
+      "devops": "Hosting, DNS, CI/CD, omgevingen, back‑ups, security‑hardening. Laag voor managed WP, hoger voor custom servers.",
+      "seo": "Meta, sitemap, redirects, schema, keyword mapping. Voor kleine sites: beperkt (1–4 u).",
+      "content": "Tekstschrijven/bewerken en contentinvoer/migratie. Uren per batch nemen toe met paginavolume."
+    },
+    "levers": {
+      "project_type": {
+        "label": "Projecttype",
+        "help": "Brochuresites zijn lichter; E‑commerce en webapps voegen datamodellen en flows toe.",
+        "options": {
+          "brochure": "Brochure / Marketing",
+          "ecommerce": "E‑commerce",
+          "webapp": "Webapp / SaaS"
+        }
+      },
+      "design_source": {
+        "label": "Ontwerpbron",
+        "help": "Start met een thema/template, gebruik aangeleverde Figma of ontwerp vanaf nul. Multipliers beïnvloeden FE/Design.",
+        "options": {
+          "template_existing": "Bestaand thema/template",
+          "provided_figma": "Aangeleverde Figma (voorgedesignd)",
+          "from_scratch": "Vanaf nul (UI‑kit/systeem)",
+          "other": "Overig (offline specificeren)"
+        }
+      },
+      "brand_design": {
+        "label": "Merk & visueel ontwerp",
+        "help": "Hoeveel nieuw branding/design‑systeemwerk valt binnen scope.",
+        "options": {
+          "none": "Bestaand merk (geen design)",
+          "light": "Lichte UI‑polish",
+          "full": "Volledig design‑systeem",
+          "other": "Overig (offline specificeren)"
+        }
+      },
+      "pages_unique": {
+        "label": "Unieke paginatemplates",
+        "help": "Verschillende layouts (Home, Over, Lijst, Detail). Voegt Design + FE + QA toe.",
+        "unit": "sjablonen"
+      },
+      "pages_reused_count": {
+        "label": "Herbruikbare pagina’s (instanties)",
+        "help": "Instanties die bestaande templates hergebruiken (voornamelijk contentinvoer + kleine QA).",
+        "unit": "pagina’s"
+      },
+      "content_state": {
+        "label": "Contentgereedheid",
+        "help": "Wie schrijft en levert de teksten. Copywriting voegt contenturen toe; gedeeltelijke content vraagt edits.",
+        "options": {
+          "ready": "Alle content aangeleverd",
+          "partial": "Gedeeltelijk (vergt edits)",
+          "copy_needed": "Tekstschrijven nodig",
+          "other": "Overig (offline specificeren)"
+        }
+      },
+      "i18n_locales": {
+        "label": "Talen",
+        "help": "Elke extra taal voegt FE/BE‑integratie, content en QA toe. Eén taal voegt niets toe."
+      },
+      "cms_choice": {
+        "label": "Platform / CMS",
+        "help": "Gehoste builders verlagen BE/DevOps maar beperken flexibiliteit. WordPress is flexibel; headless vraagt integratie.",
+        "options": {
+          "none": "Geen CMS (static/SSR)",
+          "wordpress": "WordPress (klassiek)",
+          "webflow": "Webflow (gehoste builder)",
+          "wix": "Wix (gehoste builder)",
+          "squarespace": "Squarespace (gehoste builder)",
+          "sanity": "Sanity (Headless)",
+          "shopify": "Shopify (Headless optioneel)",
+          "other": "Overig (offline specificeren)"
+        }
+      },
+      "wp_page_builder": {
+        "label": "WP‑pagebuilder",
+        "help": "Als WordPress is gekozen: welke builder? Sommige verhogen QA door gegenereerde markup.",
+        "options": {
+          "gutenberg": "Gutenberg (native)",
+          "elementor": "Elementor",
+          "divi": "Divi",
+          "other": "Overig"
+        }
+      },
+      "ecom_depth": {
+        "label": "E‑commerce‑omvang",
+        "help": "Alleen betalingen = licht; catalogus/winkelwagen/belastingen/verzending = midden; varianten/promos/abonnementen = zwaar.",
+        "options": {
+          "lite": "Alleen betalingen (weinig SKU’s)",
+          "standard": "Catalogus + winkelwagen + belastingen + verzending",
+          "advanced": "Varianten, promoties, abonnementen"
+        }
+      },
+      "sku_count": {
+        "label": "Aantal producten",
+        "help": "Catalogusgrootte beïnvloedt contentinvoer, imports en QA. Tel unieke verkoopbare items."
+      },
+      "auth": {
+        "label": "Authenticatie & accounts",
+        "help": "Schakel inlogflows in. E‑mail+wachtwoord is basic; OAuth voegt providers en beleid toe.",
+        "options": {
+          "none": "Geen auth",
+          "email": "E‑mail/wachtwoord + reset",
+          "oauth": "OAuth (Google/Apple/etc.)",
+          "other": "Overig"
+        }
+      },
+      "integrations": {
+        "label": "Integraties van derden",
+        "help": "Typische add‑ons: analytics/toestemming, CRM, e‑mailmarketing, betalingen, zoeken, PIM/ERP.",
+        "options": {
+          "analytics": "GA4 + Toestemming",
+          "crm": "CRM (HubSpot/Salesforce)",
+          "emailing": "E‑mail (Brevo/Mailchimp)",
+          "payments": "Betalingen (Stripe/etc.)",
+        "search": "Zoekfunctie (Algolia/Meilisearch)",
+          "pim": "PIM/ERP‑connector",
+          "other": "Overig"
+        }
+      },
+      "social_media": {
+        "label": "Sociale media",
+        "help": "Deelknoppen en basis‑embeds zijn licht. Live feeds verhogen QA en performance‑tuning.",
+        "options": {
+          "share": "Deelknoppen + meta (OG/Twitter)",
+          "embeds": "Embeds (Instagram/Twitter/LinkedIn)",
+          "feeds": "Live feeds / API‑widgets",
+          "other": "Overig"
+        }
+      },
+      "performance_target": {
+        "label": "Prestatie‑doel (Core Web Vitals)",
+        "help": "Hogere doelen voegen FE‑optimalisatie en wat DevOps/CDN‑werk toe.",
+        "options": {
+          "basic": "Redelijke defaults",
+          "good": "Lighthouse ~85+",
+          "excellent": "Lighthouse 95+ / CWV groen"
+        }
+      },
+      "accessibility": {
+        "label": "Toegankelijkheid (WCAG)",
+        "help": "Niveau van compliance en diepte van auditing. Hogere niveaus voegen QA en remediatie toe.",
+        "options": {
+          "none": "Niet in scope",
+          "aa_partial": "AA (pragmatisch)",
+          "aa_full": "AA (volledige audit + fixes)",
+          "aaa": "AAA (gerichte onderdelen)"
+        }
+      },
+      "animations": {
+        "label": "Animaties & interacties",
+        "help": "Van eenvoudige transities tot rijke micro‑interacties. Zwaarder = meer FE en QA.",
+        "options": {
+          "minimal": "Eenvoudige transities",
+          "moderate": "Hero + sectie‑reveals",
+          "complex": "Rijke micro‑interacties / 3D"
+        }
+      },
+      "seo_package": {
+        "label": "SEO",
+        "help": "Technische en on‑page basis is standaard. Keyword‑mapping en volledige contentplannen voegen uren toe.",
+        "options": {
+          "basic_meta": "Basis‑meta + sitemap",
+          "tech_onpage": "Technisch + on‑page setup",
+          "tech_keyword": "Technisch + keyword‑mapping",
+          "full": "Volledige SEO incl. contentplan",
+          "other": "Overig"
+        }
+      },
+      "security_hardening": {
+        "label": "Beveiliging & compliance",
+        "help": "Van best practices tot WAF/rate‑limiting en geplande scans.",
+        "options": {
+          "minimal": "Basis (managed host)",
+          "standard": "Best practices",
+          "enhanced": "WAF, rate‑limit, scans"
+        }
+      },
+      "hosting_stack": {
+        "label": "Hosting / stack",
+        "help": "Server/infra bepaalt DevOps‑tijd. Gehoste builders bevatten hosting (optie is dan verborgen).",
+        "options": {
+          "managed_wp": "Managed WordPress‑hosting",
+          "vercel_static": "Static/SSR op Vercel",
+          "node_server": "Node‑server (Docker)",
+          "kubernetes": "K8s / Autoscale",
+          "other": "Overig"
+        }
+      },
+      "migration": {
+        "label": "Contentmigratie",
+        "help": "Legacy‑imports kunnen handmatig of gescript zijn. Gehoste builders beperken soms automatisering.",
+        "options": {
+          "none": "Geen legacy‑content",
+          "semi_auto": "Semi‑automatische import",
+          "manual": "Handmatige migratie",
+          "other": "Overig"
+        }
+      },
+      "testing_scope": {
+        "label": "Testscope",
+        "help": "Bepaal hoe breed we testen (browsers/devices) en of we basisautomatisering toevoegen.",
+        "options": {
+          "browsers": "Cross‑browser matrix",
+          "devices": "Set responsive devices",
+          "automation": "Basale E2E‑automatisering",
+          "other": "Overig"
+        }
+      },
+      "handover_docs": {
+        "label": "Overdracht & documentatie",
+        "help": "Van README + korte Looms tot een ops‑playbook en live training.",
+        "options": {
+          "readme": "README + Looms",
+          "playbook": "Ops‑playbook + training",
+          "other": "Overig"
+        }
+      },
+      "risk_level": {
+        "label": "Risiconiveau",
+        "help": "Hoger risico verhoogt de contingentie voor P80. P50 blijft gelijk.",
+        "options": {
+          "low": "Laag",
+          "medium": "Middel",
+          "high": "Hoog"
+        }
+      },
+      "timeline_pressure": {
+        "label": "Tijdsdruk",
+        "help": "Rush vermenigvuldigt uren voor parallelisatie en extra coördinatie.",
+        "options": {
+          "normal": "Normaal",
+          "rush10": "Rush (+10%)",
+          "rush20": "Rush (+20%)"
+        }
+      }
+    },
+    "presets": {
+      "offerte_simple_website": "Eenvoudige website",
+      "preset_good": "Goede website",
+      "preset_professional": "Professionele website",
+      "preset_custom": "Maatwerk website"
+    },
+    "assumptions": [
+      "Klant levert merk‑assets tenzij 'Brand & Visual Design' = 'full'.",
+      "Content is definitief tenzij 'Content Readiness' anders aangeeft.",
+      "Eén revisieronde per uniek template is inbegrepen.",
+      "Geen ondersteuning voor oude browsers (meer dan 2 hoofdversies terug).",
+      "Gehoste builders (Wix/Squarespace/Webflow) bevatten hosting; geavanceerde aanpassingen kunnen beperkt zijn."
+    ],
+    "exclusions": [
+      "Stockfoto’s/licentiekosten.",
+      "Abonnementskosten van derden (CMS, zoeken, WAF, enz.).",
+      "Doorlopend SEO‑linkbuilding en PR.",
+      "Native mobiele apps.",
+      "Complexe datamigraties buiten de gekozen scope."
+    ]
+  }
+}
+  

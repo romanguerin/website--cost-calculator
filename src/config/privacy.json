@@ -1,0 +1,30 @@
+{
+    "en": {
+      "title": "Privacy Policy",
+      "updated": "Updated: 2025‑01‑01",
+      "items": [
+        "We don’t store your inputs on this demo.",
+        "Anonymous analytics may be used to improve the experience."
+      ],
+      "seo": { "title": "Privacy Policy", "description": "How we handle data in this demo." }
+    },
+    "fr": {
+      "title": "Politique de confidentialité",
+      "updated": "Mis à jour : 01‑01‑2025",
+      "items": [
+        "Nous ne stockons pas vos saisies sur cette démo.",
+        "Des analyses anonymes peuvent être utilisées pour améliorer l’expérience."
+      ],
+      "seo": { "title": "Politique de confidentialité", "description": "Traitement des données dans cette démo." }
+    },
+    "nl": {
+      "title": "Privacyverklaring",
+      "updated": "Bijgewerkt: 01‑01‑2025",
+      "items": [
+        "We slaan je invoer in deze demo niet op.",
+        "Anonieme analytics kunnen worden gebruikt om de ervaring te verbeteren."
+      ],
+      "seo": { "title": "Privacyverklaring", "description": "Hoe we met data omgaan in deze demo." }
+    }
+  }
+  

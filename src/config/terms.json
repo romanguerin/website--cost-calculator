@@ -1,0 +1,27 @@
+{
+    "en": {
+      "title": "Terms of Use",
+      "items": [
+        "This is a non‑binding demo for estimation purposes only.",
+        "No warranty is provided. Use at your own discretion."
+      ],
+      "seo": { "title": "Terms of Use", "description": "Simple demo terms and limitations." }
+    },
+    "fr": {
+      "title": "Conditions d’utilisation",
+      "items": [
+        "Il s’agit d’une démo non contraignante à des fins d’estimation uniquement.",
+        "Aucune garantie n’est fournie. Utilisation à votre discrétion."
+      ],
+      "seo": { "title": "Conditions d’utilisation", "description": "Conditions et limites simples de la démo." }
+    },
+    "nl": {
+      "title": "Gebruiksvoorwaarden",
+      "items": [
+        "Dit is een vrijblijvende demo, uitsluitend voor schattingen.",
+        "Er wordt geen garantie gegeven. Gebruik naar eigen inzicht."
+      ],
+      "seo": { "title": "Gebruiksvoorwaarden", "description": "Eenvoudige demovoorwaarden en beperkingen." }
+    }
+  }
+  

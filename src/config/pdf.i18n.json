@@ -1,0 +1,114 @@
+{
+    "en": {
+      "dialog": {
+        "exportTitle": "Export PDF",
+        "clientLabel": "Client name (optional)",
+        "clientPlaceholder": "Acme Corp",
+        "devLabel": "Developer name (optional)",
+        "devPlaceholder": "Your Name / Agency",
+        "cancel": "Cancel",
+        "save": "Save PDF",
+        "generating": "Generating…"
+      },
+      "pdf": {
+        "title": "codecost.io",
+        "sections": {
+          "meta": "Meta",
+          "totals": "Totals",
+          "breakdown": "Breakdown (Key Roles)",
+          "selections": "Selections"
+        },
+        "fields": {
+          "date": "Date",
+          "client": "Client",
+          "developer": "Developer",
+          "language": "Language",
+          "country": "Country",
+          "currency": "Currency",
+          "p50h": "P50 Hours",
+          "p50c": "P50 Cost",
+          "p80h": "P80 Hours",
+          "p80c": "P80 Cost",
+          "role": "Role",
+          "hours": "Hours",
+          "cost": "Cost"
+        },
+        "filenamePrefix": "estimate"
+      }
+    },
+    "fr": {
+      "dialog": {
+        "exportTitle": "Exporter en PDF",
+        "clientLabel": "Nom du client (optionnel)",
+        "clientPlaceholder": "Société Acme",
+        "devLabel": "Nom du développeur (optionnel)",
+        "devPlaceholder": "Votre nom / Agence",
+        "cancel": "Annuler",
+        "save": "Enregistrer le PDF",
+        "generating": "Génération…"
+      },
+      "pdf": {
+        "title": "codecost.io",
+        "sections": {
+          "meta": "Métadonnées",
+          "totals": "Totaux",
+          "breakdown": "Répartition (rôles clés)",
+          "selections": "Sélections"
+        },
+        "fields": {
+          "date": "Date",
+          "client": "Client",
+          "developer": "Développeur",
+          "language": "Langue",
+          "country": "Pays",
+          "currency": "Devise",
+          "p50h": "Heures P50",
+          "p50c": "Coût P50",
+          "p80h": "Heures P80",
+          "p80c": "Coût P80",
+          "role": "Rôle",
+          "hours": "Heures",
+          "cost": "Coût"
+        },
+        "filenamePrefix": "devis"
+      }
+    },
+    "nl": {
+      "dialog": {
+        "exportTitle": "Exporteer PDF",
+        "clientLabel": "Klantnaam (optioneel)",
+        "clientPlaceholder": "Acme BV",
+        "devLabel": "Naam ontwikkelaar (optioneel)",
+        "devPlaceholder": "Jouw naam / Bureau",
+        "cancel": "Annuleren",
+        "save": "PDF opslaan",
+        "generating": "Bezig…"
+      },
+      "pdf": {
+        "title": "codecost.io",
+        "sections": {
+          "meta": "Meta",
+          "totals": "Totalen",
+          "breakdown": "Uitsplitsing (kernrollen)",
+          "selections": "Selecties"
+        },
+        "fields": {
+          "date": "Datum",
+          "client": "Klant",
+          "developer": "Ontwikkelaar",
+          "language": "Taal",
+          "country": "Land",
+          "currency": "Valuta",
+          "p50h": "P50 uren",
+          "p50c": "P50 kosten",
+          "p80h": "P80 uren",
+          "p80c": "P80 kosten",
+          "role": "Rol",
+          "hours": "Uren",
+          "cost": "Kosten"
+        },
+        "filenamePrefix": "offerte"
+      }
+    }
+  }
+  

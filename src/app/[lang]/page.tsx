@@ -2,7 +2,8 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { isLang, type Lang } from "@/lib/i18n";
+import { isLang, type Lang, getAssumptions, getExclusions, tRateHelp, tGroup, tLever, tOptionLabel, tPresetLabel } from '@/lib/i18n';
+import ExportPdfDialog from "@/components/ExportPdfDialog";
 
 import stringsJson from "@/config/strings.json";
 import factorsJson from "@/config/factors.json";
@@ -24,8 +25,16 @@ const SIMPLE_PRESET_ID = "offerte_simple_website";
 
 const STR: Record<Lang, Record<string, string>> = stringsJson as any;
 
-// Short explanations shown beside each rate (help '?')
-const DEFAULT_RATE_HELP: Record<Role, string> = factorsJson.rateHelp as any;
+const DEFAULT_COUNTRY_BY_LANG: Record<Lang, string> = {
+  en: "US",
+  fr: "FR",
+  nl: "NL",
+};
+
+
+
+
+// Short explanations shown beside each rate (help '?') come from i18n via tRateHelp
 
 /* ---------- theme hook (system default) ---------- */
 
@@ -91,7 +100,9 @@ function cx(...classes: Array<string | false | null | undefined>) {
 
 export default function Home() {
   const router = useRouter();
+  const [showPdf, setShowPdf] = useState(false);
   const params = useParams<{ lang?: string }>();
+  const [countryTouched, setCountryTouched] = useState(false);
 
   // compose config (split files)
   const cfg: Cfg = useMemo(() => ({ ...(factorsJson as any), ...(countriesJson as any) }), []);
@@ -106,26 +117,43 @@ export default function Home() {
   const [theme, setTheme, isDark] = useThemeDefault();
   const T = STR[lang];
 
-  // defaults (apply simple preset on first load)
+    // still inside Home(), after cfg/lang are known:
+const initialCountry = useMemo(() => {
+  return (
+    cfg.countries.find((c: any) => c.code === DEFAULT_COUNTRY_BY_LANG[lang])?.code ??
+    cfg.countries[0].code
+  );
+}, [cfg, lang]);
+
   const initialSelections: Selections = useMemo(() => {
-    const firstCountry = (cfg.countries as any[])[0];
-    let s: Selections = { _country: firstCountry.code, _roleAdjust: {}, _rateOverrides: {}, _taxOverrides: {} };
+    let s: Selections = {
+      _country: initialCountry,                      // ✅ use mapped country
+      _roleAdjust: {},
+      _rateOverrides: {},
+      _taxOverrides: {}
+    };
     for (const l of cfg.levers as any[]) {
       const d = (l as any).default;
       if (d !== undefined) s[l.id] = d;
       if (l.type === "multiselect" && s[l.id] === undefined) s[l.id] = [];
     }
     const p = (cfg.presets ?? []).find((x: any) => x.id === SIMPLE_PRESET_ID);
-    if (p) s = { ...s, ...p.values, _country: p.country };
+    if (p) s = { ...s, ...p.values };               // leave _country as-is
     return s;
-  }, [cfg]);
-
+  }, [cfg, initialCountry]);
+  
   const [selections, setSelections] = useState<Selections>(initialSelections);
-  const [country, setCountry] = useState<string>(initialSelections._country || cfg.countries[0].code);
+  const [country, setCountry] = useState<string>(initialCountry);   // ✅
   const [presetId, setPresetId] = useState<string>(SIMPLE_PRESET_ID);
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [showRateModal, setShowRateModal] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+
+  useEffect(() => {
+    if (countryTouched) return;
+    setCountry(initialCountry);
+  }, [initialCountry, countryTouched]);
+  
 
   // sync country into selections
   useEffect(() => { setSelections(prev => ({ ...prev, _country: country })); }, [country]);
@@ -146,8 +174,10 @@ export default function Home() {
 
   // presets
   const presetOptions = (cfg.presets ?? [])
-    .slice().sort((a: any, b: any) => (Number(a.meta?.order ?? 0) - Number(b.meta?.order ?? 0)))
-    .map((p: any) => ({ value: p.id, label: p.label }));
+  .slice()
+  .sort((a: any, b: any) => (Number(a.meta?.order ?? 0) - Number(b.meta?.order ?? 0)))
+  .map((p: any) => ({ value: p.id, label: tPresetLabel(lang, p.id, p.label) }));
+
 
   const applyPreset = (id: string) => {
     const next = applyPresetLib(cfg as any, selections, id);
@@ -158,13 +188,13 @@ export default function Home() {
   const onReset = () => {
     setPresetId(SIMPLE_PRESET_ID);
     const p = (cfg.presets ?? []).find((x: any) => x.id === SIMPLE_PRESET_ID);
-    const base: Selections = { _country: (p?.country ?? cfg.countries[0].code), _roleAdjust: {}, _rateOverrides: {}, _taxOverrides: {} };
+    const base: Selections = { _country: country || cfg.countries[0].code, _roleAdjust: {}, _rateOverrides: {}, _taxOverrides: {} };
     for (const l of cfg.levers as any[]) {
       const d = (l as any).default;
       if (d !== undefined) base[l.id] = d;
       if (l.type === "multiselect" && base[l.id] === undefined) base[l.id] = [];
     }
-    const next = p ? { ...base, ...p.values, _country: p.country } : base;
+    const next = p ? { ...base, ...p.values } : base;
     setSelections(next); setCountry(next._country);
   };
 
@@ -178,9 +208,10 @@ export default function Home() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className={cx("h-2 w-2 rounded-full", isDark ? "bg-neutral-300" : "bg-neutral-800")}></span>
-            <span className="font-medium">CostCalc</span>
+            <span className="font-medium">CodeCost</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
+            <span className="font-medium">友</span>
             <SelectFancy
               ariaLabel={T.language}
               value={lang}
@@ -198,6 +229,7 @@ export default function Home() {
               isDark={isDark}
               widthClass="w-[72px]"
             />
+            <span className="ml-4 font-medium">☀︎</span>
             <SelectFancy
               ariaLabel={T.theme}
               value={theme}
@@ -206,7 +238,7 @@ export default function Home() {
               isDark={isDark}
               widthClass="w-[120px]"
             />
-            <Button variant="solid" onClick={() => setShowLogin(true)} isDark={isDark}>{T.login}</Button>
+            {/* <Button variant="solid" onClick={() => setShowLogin(true)} isDark={isDark}>{T.login}</Button> */}
           </div>
         </div>
       </nav>
@@ -221,13 +253,14 @@ export default function Home() {
 
           {/* Secondary toolbar (estimator controls) */}
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            <SelectFancy
+          <SelectFancy
               ariaLabel={T.country}
               value={country}
-              onChange={setCountry}
+              onChange={(code) => { setCountryTouched(true); setCountry(code); }}   // 👈 touched
               options={cfg.countries.map((c: any) => ({ value: c.code, label: c.name }))}
               isDark={isDark}
             />
+
             <Button variant="outline" onClick={() => setShowRateModal(true)} isDark={isDark}>{T.editRates}</Button>
             {cfg.presets?.length ? (
               <SelectFancy
@@ -250,9 +283,13 @@ export default function Home() {
             if (levers.length === 0) return null;
             return (
               <section key={group.id}>
-                <h2 className="text-lg sm:text-xl font-medium mb-3 sm:mb-4">{group.label}</h2>
+                {(() => {
+                    const G = tGroup(lang, group.id);
+                    const groupTitle = G.label ?? group.id;
+                    return <h2 className="text-lg sm:text-xl font-medium mb-3 sm:mb-4">{groupTitle}</h2>;
+                  })()}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                  {levers.map((lever) => renderLeverCard(lever, selections, setSelections, isDark))}
+                {levers.map((lever) => renderLeverCard(lever, selections, setSelections, isDark, lang))}
                 </div>
               </section>
             );
@@ -286,18 +323,40 @@ export default function Home() {
           </Card>
         </section>
 
+        {/* Export PDF */}
+        <section className="mt-8 sm:mt-10 flex justify-center">
+          <Button onClick={() => setShowPdf(true)} isDark={isDark}>Export PDF</Button>
+        </section>
+
+        <ExportPdfDialog
+          open={showPdf}
+          onClose={() => setShowPdf(false)}
+          lang={lang}
+          countryCode={country}
+          selections={selections}
+          result={{
+            currencySymbol: result.currencySymbol,
+            p50: result.p50,
+            p80: result.p80,
+            hoursByRole: result.hoursByRole as any,
+            costByRole: result.costByRole as any,
+            overheads: result.overheads,
+          }}
+        />
+
         {/* Assumptions / Exclusions */}
         <section className="mt-8 sm:mt-10 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <Card title={T.assumptions} isDark={isDark}>
             <ul className={cx("list-disc pl-5 space-y-1 text-sm", isDark ? "text-neutral-300" : "text-neutral-700")}>
-              {(cfg.assumptions ?? []).map((a: string, i: number) => <li key={i}>{a}</li>)}
+              {getAssumptions(lang).map((a: string, i: number) => <li key={i}>{a}</li>)}
             </ul>
           </Card>
           <Card title={T.exclusions} isDark={isDark}>
             <ul className={cx("list-disc pl-5 space-y-1 text-sm", isDark ? "text-neutral-300" : "text-neutral-700")}>
-              {(cfg.exclusions ?? []).map((e: string, i: number) => <li key={i}>{e}</li>)}
+              {getExclusions(lang).map((e: string, i: number) => <li key={i}>{e}</li>)}
             </ul>
           </Card>
+          
         </section>
 
         {/* Footer */}
@@ -305,12 +364,14 @@ export default function Home() {
           isDark ? "border-neutral-900 text-neutral-400" : "border-neutral-200 text-neutral-600"
         )}>
           <p className="max-w-xl">{T.pricesNote}</p>
-          <nav className="flex flex-wrap gap-4">
-            <a href="#" className="underline-offset-4 hover:underline">{T.footerAbout}</a>
-            <a href="#" className="underline-offset-4 hover:underline">{T.footerPrivacy}</a>
-            <a href="#" className="underline-offset-4 hover:underline">{T.footerTerms}</a>
-          </nav>
+          {/* in your footer */}
+            <nav className="flex flex-wrap gap-4">
+              <a href={`/${lang}/about`} className="underline-offset-4 hover:underline">{T.footerAbout}</a>
+              <a href={`/${lang}/privacy`} className="underline-offset-4 hover:underline">{T.footerPrivacy}</a>
+              <a href={`/${lang}/terms`} className="underline-offset-4 hover:underline">{T.footerTerms}</a>
+            </nav>
         </footer>
+        <p className="text-neutral-600 pt-6 flex flex-row justify-center items-center">all rights reserved by&nbsp;<a className="underline" href="alpine-pixel.com">AlpinePixel</a></p>
       </div>
 
       {/* Role Modal */}
@@ -338,6 +399,7 @@ export default function Home() {
           onChange={setSelections}
           onClose={() => setShowRateModal(false)}
           isDark={isDark}
+          lang={lang}
         />
       )}
 
@@ -422,7 +484,8 @@ function RateEditorModal({
   currencySymbol,
   onChange,
   onClose,
-  isDark
+  isDark,
+  lang
 }: {
   config: any;
   countryCode: string;
@@ -432,6 +495,7 @@ function RateEditorModal({
   onChange: (fn: (s: Selections) => Selections) => void;
   onClose: () => void;
   isDark: boolean;
+  lang: Lang;
 }) {
   const baseRates = useMemo(() => getCountryBaseRates(config, countryCode), [config, countryCode]);
 
@@ -461,7 +525,7 @@ function RateEditorModal({
           <div key={role} className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 w-36">
               <div className="capitalize">{role}</div>
-              <RateHelp text={DEFAULT_RATE_HELP[role] ?? ""} isDark={isDark} />
+              <RateHelp text={tRateHelp(lang, role)} isDark={isDark} />
             </div>
             <div className="text-xs w-28 text-neutral-500">
               base: {baseRates[role] ?? 0} {currencySymbol}/h
@@ -533,24 +597,34 @@ function renderLeverCard(
   lever: Lever,
   selections: Selections,
   setSelections: (fn: (s: Selections) => Selections) => void,
-  isDark: boolean
-) {
+  isDark: boolean,
+  lang?: Lang
+): React.ReactNode {
   const key = lever.id;
-  const help = (lever as any).help as string | undefined;
+  const L = tLever(lang as Lang, lever.id);
+  const title = L.label ?? (lever as any).label ?? lever.id;
+  const help = L.help ?? (lever as any).help;
 
   if (lever.type === "number") {
     const val = Number(selections[lever.id] ?? (lever as any).default ?? 0);
     return (
-      <FieldCard key={key} title={lever.label} help={help} isDark={isDark}>
+      <FieldCard key={key} title={title} help={help} isDark={isDark}>
         <input
           id={lever.id}
           type="number"
           min={(lever as any).min}
           max={(lever as any).max}
           value={val}
-          onChange={(e) => setSelections((s) => ({ ...s, [lever.id]: clamp(Number(e.target.value), (lever as any).min, (lever as any).max) }))}
-          className={cx("w-full rounded-lg p-2 border",
-            isDark ? "bg-neutral-900 border-neutral-700" : "bg-white border-neutral-300")}
+          onChange={(e) =>
+            setSelections((s) => ({
+              ...s,
+              [lever.id]: clamp(Number(e.target.value), (lever as any).min, (lever as any).max),
+            }))
+          }
+          className={cx(
+            "w-full rounded-lg p-2 border",
+            isDark ? "bg-neutral-900 border-neutral-700" : "bg-white border-neutral-300"
+          )}
         />
       </FieldCard>
     );
@@ -558,13 +632,17 @@ function renderLeverCard(
 
   if (lever.type === "select") {
     const val = String(selections[lever.id] ?? (lever as any).default ?? (lever.options[0]?.value ?? ""));
+    const options = lever.options.map((o) => ({
+      value: o.value,
+      label: tOptionLabel(lang as Lang, lever.id, o.value, (o as any).label),
+    }));
     return (
-      <FieldCard key={key} title={lever.label} help={help} isDark={isDark}>
+      <FieldCard key={key} title={title} help={help} isDark={isDark}>
         <SelectFancy
-          ariaLabel={lever.label}
+          ariaLabel={title}
           value={val}
           onChange={(v) => setSelections((s) => ({ ...s, [lever.id]: v }))}
-          options={lever.options.map((o) => ({ value: o.value, label: o.label }))}
+          options={options}
           isDark={isDark}
         />
       </FieldCard>
@@ -575,10 +653,11 @@ function renderLeverCard(
     const vals: string[] = Array.isArray(selections[lever.id]) ? selections[lever.id] : [];
     const maxSelected = (lever as any).maxSelected as number | undefined;
     return (
-      <FieldCard key={key} title={lever.label} help={help} isDark={isDark}>
+      <FieldCard key={key} title={title} help={help} isDark={isDark}>
         <div className="mt-1 flex flex-wrap gap-2">
           {lever.options.map((o) => {
             const active = vals.includes(o.value);
+            const label = tOptionLabel(lang as Lang, lever.id, o.value, (o as any).label);
             return (
               <button
                 key={o.value}
@@ -599,7 +678,7 @@ function renderLeverCard(
                     : (isDark ? "border-neutral-700 bg-neutral-900 text-neutral-200 hover:border-neutral-500" : "border-neutral-300 bg-white text-neutral-800 hover:border-neutral-500")
                 )}
               >
-                {o.label}
+                {label}
               </button>
             );
           })}

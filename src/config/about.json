@@ -1,0 +1,39 @@
+{
+    "en": {
+      "title": "About Website Cost Calculator",
+      "lede": "Transparent, fast website estimates with clear P50/P80 and role breakdowns.",
+      "body": [
+        "This demo helps you ballpark effort and cost by tweaking a few practical levers.",
+        "It reads business logic from JSON, applies a pure engine, and keeps UI simple and fast."
+      ],
+      "seo": {
+        "title": "About • Website Cost Calculator",
+        "description": "What this calculator is, how it works, and the principles behind transparent estimates."
+      }
+    },
+    "fr": {
+      "title": "À propos du Calculateur de coût de site web",
+      "lede": "Estimations rapides et transparentes, avec P50/P80 et répartition par rôle.",
+      "body": [
+        "Cette démo permet d’estimer l’effort et le coût en ajustant quelques leviers pratiques.",
+        "La logique métier vient d’un JSON, le moteur est pur, et l’UI reste simple et rapide."
+      ],
+      "seo": {
+        "title": "À propos • Calculateur de coût de site web",
+        "description": "Ce que fait cet outil, son fonctionnement et notre approche des estimations transparentes."
+      }
+    },
+    "nl": {
+      "title": "Over de Website Cost Calculator",
+      "lede": "Transparante, snelle schattingen met duidelijke P50/P80 en rolverdeling.",
+      "body": [
+        "Deze demo helpt je de inspanning en kosten te bepalen door een paar praktische knoppen te schuiven.",
+        "De businesslogica staat in JSON, de engine is puur, en de UI blijft simpel en snel."
+      ],
+      "seo": {
+        "title": "Over • Website Cost Calculator",
+        "description": "Wat deze calculator doet, hoe hij werkt en de principes achter transparante schattingen."
+      }
+    }
+  }
+  
